@@ -12,14 +12,30 @@ import java.util.Arrays;
 public abstract class StringUtil {
 
 	/**
-	 * Capitalizes the given String, converting the first character to uppercase and the rest to lowercase
+	 * Capitalizes the given String, converting the first character to uppercase
+	 * and the rest to lowercase
 	 * 
 	 * @param string
 	 *            the String to capitalize
 	 * @return the capitalized version of the String
 	 */
-	public static String capitalize(String string) {
-		return string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
+	public static String capitalize(String str) {
+		return str.substring(0, 1).toUpperCase()
+				+ str.substring(1).toLowerCase();
+	}
+
+	/**
+	 * Tests whether or not the given string starts with a vowel, and returns
+	 * true if it does and false if it does not
+	 * 
+	 * @param str
+	 *            the String to test
+	 * @return true if the String begins with a vowel and false if it does not
+	 */
+	public static boolean vowel(String str) {
+		return str.length() > 0
+				? "aeiou".indexOf(Character.toLowerCase(str.charAt(0))) >= 0
+				: false;
 	}
 
 	/**
@@ -40,7 +56,8 @@ public abstract class StringUtil {
 	}
 
 	/**
-	 * Repeat the given character the specified number of times to create a String
+	 * Repeat the given character the specified number of times to create a
+	 * String
 	 * 
 	 * @param char
 	 *            the character to repeat
@@ -121,7 +138,8 @@ public abstract class StringUtil {
 	 *            the array whose String representation to return
 	 * @param delimiter
 	 *            the separator String
-	 * @return the String representation of the contents of the array separated by the given delimiter
+	 * @return the String representation of the contents of the array separated
+	 *         by the given delimiter
 	 */
 	public static String join(Object[] arr, String delimiter) {
 		StringBuilder sb = new StringBuilder();
@@ -146,7 +164,8 @@ public abstract class StringUtil {
 	}
 
 	/**
-	 * Creates a string from the given {@link Reader} by reading the stream into a
+	 * Creates a string from the given {@link Reader} by reading the stream into
+	 * a
 	 * char buffer for more much greater performance than {@link StringBuilder}
 	 * 
 	 * @param reader

@@ -3,10 +3,13 @@ package com.kmecpp.jlib;
 import java.io.File;
 import java.util.Calendar;
 
-public abstract class SystemUtil {
+public final class SystemUtil {
 
 	public static final long MEGABYTE = 1048576L;
 	public static final long GIGABYTE = 1073741824L;
+
+	private SystemUtil() {
+	}
 
 	/**
 	 * Gets the system operating system information
@@ -24,7 +27,8 @@ public abstract class SystemUtil {
 	 */
 	public static String getCurrentTime() {
 		Calendar calendar = Calendar.getInstance();
-		return (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR) + " " + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
+		return (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR) + " " + calendar.get(Calendar.HOUR) + ":"
+				+ calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
 	}
 
 	/**
@@ -55,7 +59,8 @@ public abstract class SystemUtil {
 	}
 
 	/**
-	 * Gets the maximum amount of memory that the JVM will attempt to use in megabytes
+	 * Gets the maximum amount of memory that the JVM will attempt to use in
+	 * megabytes
 	 * 
 	 * @return the maximum JVM memory
 	 */
@@ -82,7 +87,8 @@ public abstract class SystemUtil {
 	}
 
 	/**
-	 * Gets the primary filesystem root, which is the one currently being used by the program
+	 * Gets the primary filesystem root, which is the one currently being used
+	 * by the program
 	 * 
 	 * @return the primary filesystem root
 	 */
@@ -96,7 +102,8 @@ public abstract class SystemUtil {
 	}
 
 	/**
-	 * Gets the amount of free disk space on the primary filesystem root in gigabytes
+	 * Gets the amount of free disk space on the primary filesystem root in
+	 * gigabytes
 	 * 
 	 * @return the amount of free disk space
 	 */
@@ -105,7 +112,8 @@ public abstract class SystemUtil {
 	}
 
 	/**
-	 * Gets the amount of used disk space on the primary filesystem root in gigabytes
+	 * Gets the amount of used disk space on the primary filesystem root in
+	 * gigabytes
 	 * 
 	 * @return the amount of used disk space
 	 */

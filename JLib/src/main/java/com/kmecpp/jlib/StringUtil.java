@@ -9,7 +9,10 @@ import java.util.Arrays;
 /**
  * A utility class for manipulating text
  */
-public abstract class StringUtil {
+public final class StringUtil {
+
+	private StringUtil() {
+	}
 
 	/**
 	 * Capitalizes the given String, converting the first character to uppercase

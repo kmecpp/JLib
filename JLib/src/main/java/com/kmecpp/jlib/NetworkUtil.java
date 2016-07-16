@@ -7,10 +7,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public abstract class NetworkUtil {
+public final class NetworkUtil {
+
+	private NetworkUtil() {
+	}
 
 	/**
-	 * Creates the {@link URL} from the given string and throws a runtime exception if a {@link MalformedURLException} occurrs
+	 * Creates the {@link URL} from the given string and throws a runtime
+	 * exception if a {@link MalformedURLException} occurrs
 	 * 
 	 * @param url
 	 *            the string representation of the URL

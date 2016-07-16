@@ -1,8 +1,8 @@
 package com.kmecpp.jlib;
 
-public final class Valid {
+public final class Validate {
 
-	private Valid() {
+	private Validate() {
 	}
 
 	/**
@@ -16,11 +16,10 @@ public final class Valid {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static <T> T[] length(T[] array, int length) {
+	public static void length(Object[] array, int length) {
 		if (array.length != length) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + length);
 		}
-		return array;
 	}
 
 	/**
@@ -36,11 +35,10 @@ public final class Valid {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static <T> T[] length(T[] array, int min, int max) {
+	public static void length(Object[] array, int min, int max) {
 		if (array.length < min || array.length > max) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + min + "-" + max);
 		}
-		return array;
 	}
 
 	/**
@@ -53,11 +51,10 @@ public final class Valid {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static <T> T[] maxLength(T[] array, int max) {
+	public static void maxLength(Object[] array, int max) {
 		if (array.length > max) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", maximum length: " + max);
 		}
-		return array;
 	}
 
 	/**
@@ -70,11 +67,10 @@ public final class Valid {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static <T> T[] minLength(T[] array, int min) {
+	public static void minLength(Object[] array, int min) {
 		if (array.length < min) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", minimum length: " + min);
 		}
-		return array;
 	}
 
 	/**

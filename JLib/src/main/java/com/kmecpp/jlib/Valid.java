@@ -1,22 +1,26 @@
 package com.kmecpp.jlib;
 
-public class Validate {
+public final class Valid {
+
+	private Valid() {
+	}
 
 	/**
 	 * Validates that an array has the specified length. If it does not, an
 	 * {@link IllegalArgumentException} is thrown
 	 * 
-	 * @param arr
+	 * @param array
 	 *            the array to test
 	 * @param length
 	 *            the only permitted array length
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static void length(Object[] array, int length) {
+	public static <T> T[] length(T[] array, int length) {
 		if (array.length != length) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + length);
 		}
+		return array;
 	}
 
 	/**
@@ -32,10 +36,11 @@ public class Validate {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static void length(Object[] array, int min, int max) {
+	public static <T> T[] length(T[] array, int min, int max) {
 		if (array.length < min || array.length > max) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + min + "-" + max);
 		}
+		return array;
 	}
 
 	/**
@@ -48,10 +53,11 @@ public class Validate {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static void maxLength(Object[] array, int max) {
+	public static <T> T[] maxLength(T[] array, int max) {
 		if (array.length > max) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", maximum length: " + max);
 		}
+		return array;
 	}
 
 	/**
@@ -64,10 +70,11 @@ public class Validate {
 	 * @throws IllegalArgumentException
 	 *             if the array length is invalid
 	 */
-	public static void minLength(Object[] array, int min) {
+	public static <T> T[] minLength(T[] array, int min) {
 		if (array.length < min) {
 			throw new IllegalArgumentException("Invalid array length: " + array.length + ", minimum length: " + min);
 		}
+		return array;
 	}
 
 	/**

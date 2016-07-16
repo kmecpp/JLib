@@ -3,17 +3,71 @@ package com.kmecpp.jlib;
 public class Validate {
 
 	/**
-	 * Validates that an array has the specified length. If it does not, an exception is thrown
+	 * Validates that an array has the specified length. If it does not, an
+	 * {@link IllegalArgumentException} is thrown
 	 * 
 	 * @param arr
 	 *            the array to test
 	 * @param length
-	 *            the length of the array to test against
+	 *            the only permitted array length
 	 * @throws IllegalArgumentException
-	 *             if the array length does not match the specified one
+	 *             if the array length is invalid
 	 */
-	public static void arrayLength(Object[] arr, int length) {
-		if (arr.length != length) throw new IllegalArgumentException("Invalid array length: " + arr.length + ", expecting length: " + length);
+	public static void length(Object[] array, int length) {
+		if (array.length != length) {
+			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + length);
+		}
+	}
+
+	/**
+	 * Validates that an array has a length within the specified range,
+	 * inclusive.
+	 * 
+	 * @param arr
+	 *            the array to test
+	 * @param min
+	 *            the minimum permitted array length
+	 * @param max
+	 *            the maximum permitted array length
+	 * @throws IllegalArgumentException
+	 *             if the array length is invalid
+	 */
+	public static void length(Object[] array, int min, int max) {
+		if (array.length < min || array.length > max) {
+			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + min + "-" + max);
+		}
+	}
+
+	/**
+	 * Validates that an array has a length under the given value
+	 * 
+	 * @param array
+	 *            the array to test
+	 * @param max
+	 *            the maximum permitted array length
+	 * @throws IllegalArgumentException
+	 *             if the array length is invalid
+	 */
+	public static void maxLength(Object[] array, int max) {
+		if (array.length > max) {
+			throw new IllegalArgumentException("Invalid array length: " + array.length + ", maximum length: " + max);
+		}
+	}
+
+	/**
+	 * Validates that an array has a length above the given value
+	 * 
+	 * @param arr
+	 *            the array to test
+	 * @param length
+	 *            the minimum permitted array length
+	 * @throws IllegalArgumentException
+	 *             if the array length is invalid
+	 */
+	public static void minLength(Object[] array, int min) {
+		if (array.length < min) {
+			throw new IllegalArgumentException("Invalid array length: " + array.length + ", minimum length: " + min);
+		}
 	}
 
 	/**

@@ -85,38 +85,6 @@ public final class StringUtil {
 		return repeat(' ', amount);
 	}
 
-	//	public static String center(String message) {
-	//		float chatSize = 70;
-	//		int wsSize = (int) ((chatSize - message.length()) / 2F);
-	//		return whiteSpace(wsSize) + message + whiteSpace(wsSize);
-	//	}
-	//
-	//	public static String whiteSpace(int size) {
-	//		return new String(new char[size]).replace('\0', ' ');
-	//	}
-
-	/**
-	 * Strips Essentials formatting and magic codes from the given String
-	 * 
-	 * @param str
-	 *            the String to strip
-	 * @return the stripped version of the String
-	 */
-	public static String stripFormattingCodes(String str) {
-		return str.replaceAll("(?<!&)&([k-orA-FK-OR])", "");
-	}
-
-	/**
-	 * Checks if the given String is alphanumeric
-	 * 
-	 * @param str
-	 *            the String to check
-	 * @return true if the String is alphanumeric and false if it is not
-	 */
-	public static boolean alphanumericString(String str) {
-		return str.matches("^[a-zA-Z_0-9\u00a7]+$");
-	}
-
 	/**
 	 * Converts the array to a String delimited by a space <br>
 	 * <br>

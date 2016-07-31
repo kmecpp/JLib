@@ -42,6 +42,18 @@ public final class StringUtil {
 	}
 
 	/**
+	 * Tests whether or not the given string is alphanumeric. A string is
+	 * alphanumeric if it contains only ASCII alphabet letters or numbers
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @return true if the string is alphanumeric, false if it is not
+	 */
+	public static boolean alphanumeric(String str) {
+		return str.matches("^[a-zA-Z0-9]*$");
+	}
+
+	/**
 	 * Repeat the given String the specified number of times
 	 * 
 	 * @param str

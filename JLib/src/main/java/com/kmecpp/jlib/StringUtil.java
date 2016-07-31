@@ -14,6 +14,14 @@ public final class StringUtil {
 	private StringUtil() {
 	}
 
+	public static boolean startsWithIgnoreCase(String str, String prefix) {
+		return str.toLowerCase().startsWith(prefix.toLowerCase());
+	}
+
+	public static boolean containsIgnoreCase(String str, String s) {
+		return str.toLowerCase().contains(s.toLowerCase());
+	}
+
 	/**
 	 * Capitalizes the given String, converting the first character to uppercase
 	 * and the rest to lowercase
@@ -148,8 +156,8 @@ public final class StringUtil {
 
 	/**
 	 * Creates a string from the given {@link Reader} by reading the stream into
-	 * a
-	 * char buffer for more much greater performance than {@link StringBuilder}
+	 * a char buffer for more much greater performance than
+	 * {@link StringBuilder}
 	 * 
 	 * @param reader
 	 *            the reader to read from

@@ -1,4 +1,4 @@
-package com.kmecpp.jlib;
+package com.kmecpp.jlib.object;
 
 public class ObjectValue {
 

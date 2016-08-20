@@ -1,6 +1,7 @@
 package com.kmecpp.jlib.object;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public final class Objects {
 
@@ -29,7 +30,10 @@ public final class Objects {
 				field.setAccessible(true);
 			}
 			try {
-				sb.append(field.getName() + "=" + String.valueOf(field.get(object)) + ", ");
+				String value = field.getType().isArray()
+						? Arrays.deepToString((Object[]) field.get(object))
+						: String.valueOf(field.get(object));
+				sb.append(field.getName() + "=" + value + ", ");
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				throw new Error(e);
 			}

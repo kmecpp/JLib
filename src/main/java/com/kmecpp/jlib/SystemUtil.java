@@ -2,13 +2,26 @@ package com.kmecpp.jlib;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 public final class SystemUtil {
 
 	public static final long MEGABYTE = 1048576L;
 	public static final long GIGABYTE = 1073741824L;
 
+	private static final Calendar CALENDAR = Calendar.getInstance();
+
 	private SystemUtil() {
+	}
+
+	/**
+	 * Sets the time zone this class will use to return time
+	 * 
+	 * @param timeZone
+	 *            the new timezone
+	 */
+	public static void setTimeZone(TimeZone timeZone) {
+		CALENDAR.setTimeZone(timeZone);
 	}
 
 	/**
@@ -21,14 +34,32 @@ public final class SystemUtil {
 	}
 
 	/**
-	 * Gets the current system time
+	 * Gets the current system date time as a string. The format is as specified
+	 * by getDate() and getTime(), combined and separated by a space
+	 * 
+	 * @return the current system time date
+	 */
+	public static String getDateTime() {
+		return getDate() + " " + getTime();
+	}
+
+	/**
+	 * Gets the current system date as a string with the following format:
+	 * month/day/year
 	 * 
 	 * @return the current system time
 	 */
-	public static String getCurrentTime() {
-		Calendar calendar = Calendar.getInstance();
-		return (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR) + " " + calendar.get(Calendar.HOUR) + ":"
-				+ calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
+	public static String getDate() {
+		return (CALENDAR.get(Calendar.MONTH) + 1) + "/" + CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
+	}
+
+	/**
+	 * Gets the current system time in the hour:minute:second format
+	 * 
+	 * @return the current system time
+	 */
+	public static String getTime() {
+		return CALENDAR.get(Calendar.HOUR) + ":" + CALENDAR.get(Calendar.MINUTE) + ":" + CALENDAR.get(Calendar.SECOND);
 	}
 
 	/**

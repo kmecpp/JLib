@@ -9,24 +9,24 @@ public final class SystemUtil {
 	public static final long MEGABYTE = 1048576L;
 	public static final long GIGABYTE = 1073741824L;
 
-	private static final Calendar CALENDAR = Calendar.getInstance();
+	private static TimeZone timeZone = TimeZone.getDefault();
 
 	private SystemUtil() {
 	}
 
 	/**
 	 * Sets the time zone this class will use to return time
-	 * 
+	 *
 	 * @param timeZone
 	 *            the new timezone
 	 */
 	public static void setTimeZone(TimeZone timeZone) {
-		CALENDAR.setTimeZone(timeZone);
+		SystemUtil.timeZone = timeZone;
 	}
 
 	/**
 	 * Gets the system operating system information
-	 * 
+	 *
 	 * @return the operating system information
 	 */
 	public static String getOS() {
@@ -36,7 +36,7 @@ public final class SystemUtil {
 	/**
 	 * Gets the current system date time as a string. The format is as specified
 	 * by getDate() and getTime(), combined and separated by a space
-	 * 
+	 *
 	 * @return the current system time date
 	 */
 	public static String getDateTime() {
@@ -46,25 +46,27 @@ public final class SystemUtil {
 	/**
 	 * Gets the current system date as a string with the following format:
 	 * month/day/year
-	 * 
+	 *
 	 * @return the current system time
 	 */
 	public static String getDate() {
-		return (CALENDAR.get(Calendar.MONTH) + 1) + "/" + CALENDAR.get(Calendar.DAY_OF_MONTH) + "/" + CALENDAR.get(Calendar.YEAR);
+		Calendar calendar = Calendar.getInstance(timeZone);
+		return (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + calendar.get(Calendar.YEAR);
 	}
 
 	/**
 	 * Gets the current system time in the hour:minute:second format
-	 * 
+	 *
 	 * @return the current system time
 	 */
 	public static String getTime() {
-		return CALENDAR.get(Calendar.HOUR) + ":" + CALENDAR.get(Calendar.MINUTE) + ":" + CALENDAR.get(Calendar.SECOND);
+		Calendar calendar = Calendar.getInstance(timeZone);
+		return calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
 	}
 
 	/**
 	 * Gets the number of processors available to the JVM
-	 * 
+	 *
 	 * @return the number of available processors
 	 */
 	public static int getAvailableProcessors() {
@@ -73,7 +75,7 @@ public final class SystemUtil {
 
 	/**
 	 * Gets the total free memory left available to the JVM
-	 * 
+	 *
 	 * @return the total free memory
 	 */
 	public static long getFreeMemory() {
@@ -82,7 +84,7 @@ public final class SystemUtil {
 
 	/**
 	 * Gets the current used memory in megabytes
-	 * 
+	 *
 	 * @return the current used memory
 	 */
 	public static long getUsedMemory() {
@@ -92,7 +94,7 @@ public final class SystemUtil {
 	/**
 	 * Gets the maximum amount of memory that the JVM will attempt to use in
 	 * megabytes
-	 * 
+	 *
 	 * @return the maximum JVM memory
 	 */
 	public static long getTotalMemory() {
@@ -101,7 +103,7 @@ public final class SystemUtil {
 
 	/**
 	 * Gets the current Java version
-	 * 
+	 *
 	 * @return the Java version
 	 */
 	public static String getJavaVersion() {
@@ -110,7 +112,7 @@ public final class SystemUtil {
 
 	/**
 	 * Gets a list of the available filesystem roots
-	 * 
+	 *
 	 * @return the filesystem roots
 	 */
 	public static File[] getDiskRoots() {
@@ -120,7 +122,7 @@ public final class SystemUtil {
 	/**
 	 * Gets the primary filesystem root, which is the one currently being used
 	 * by the program
-	 * 
+	 *
 	 * @return the primary filesystem root
 	 */
 	public static File getDiskRoot() {
@@ -135,7 +137,7 @@ public final class SystemUtil {
 	/**
 	 * Gets the amount of free disk space on the primary filesystem root in
 	 * gigabytes
-	 * 
+	 *
 	 * @return the amount of free disk space
 	 */
 	public static long getFreeDiskSpace() {
@@ -145,7 +147,7 @@ public final class SystemUtil {
 	/**
 	 * Gets the amount of used disk space on the primary filesystem root in
 	 * gigabytes
-	 * 
+	 *
 	 * @return the amount of used disk space
 	 */
 	public static long getUsedDiskSpace() {
@@ -154,7 +156,7 @@ public final class SystemUtil {
 
 	/**
 	 * Gets the total disk space on the primary filesystem root in gigabytes
-	 * 
+	 *
 	 * @return the total disk space
 	 */
 	public static long getTotalDiskSpace() {

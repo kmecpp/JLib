@@ -14,12 +14,43 @@ public final class StringUtil {
 	private StringUtil() {
 	}
 
+	/**
+	 * Gets whether or not the string starts with the given prefix, ignoring
+	 * case.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param prefix
+	 *            the prefix to test for
+	 * @return true if the string starts with the prefix and false if it does
+	 *         not
+	 */
 	public static boolean startsWithIgnoreCase(String str, String prefix) {
 		return str.toLowerCase().startsWith(prefix.toLowerCase());
 	}
 
-	public static boolean containsIgnoreCase(String str, String s) {
-		return str.toLowerCase().contains(s.toLowerCase());
+	/**
+	 * Gets whether or not the string contains the specified sequence
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param sequence
+	 *            the sequence to search for
+	 * @return true if the string contains the sequence, false otherwise
+	 */
+	public static boolean containsIgnoreCase(String str, String sequence) {
+		return str.toLowerCase().contains(sequence.toLowerCase());
+	}
+
+	/**
+	 * Splits the string into an array of its lines
+	 * 
+	 * @param str
+	 *            the string to split
+	 * @return an array of the string's lines
+	 */
+	public static String[] getLines(String str) {
+		return str.split(System.lineSeparator());
 	}
 
 	/**

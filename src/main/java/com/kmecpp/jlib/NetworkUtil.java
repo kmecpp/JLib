@@ -7,9 +7,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public final class NetworkUtil {
+public class NetworkUtil {
 
-	private NetworkUtil() {
+	protected NetworkUtil() {
 	}
 
 	/**

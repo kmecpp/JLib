@@ -9,9 +9,9 @@ import java.util.Arrays;
 /**
  * A utility class for manipulating text
  */
-public final class StringUtil {
+public class StringUtil {
 
-	private StringUtil() {
+	protected StringUtil() {
 	}
 
 	/**

@@ -2,7 +2,7 @@ package com.kmecpp.jlib;
 
 public final class Validate {
 
-	private Validate() {
+	protected Validate() {
 	}
 
 	/**

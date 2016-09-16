@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-public final class SystemUtil {
+public class SystemUtil {
 
 	public static final long MEGABYTE = 1048576L;
 	public static final long GIGABYTE = 1073741824L;
 
 	private static TimeZone timeZone = TimeZone.getDefault();
 
-	private SystemUtil() {
+	protected SystemUtil() {
 	}
 
 	/**

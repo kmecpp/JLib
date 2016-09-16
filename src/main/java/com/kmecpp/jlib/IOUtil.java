@@ -10,6 +10,18 @@ public class IOUtil {
 
 	public static final short DEFAULT_BUFFER_SIZE = 4096;
 
+	protected IOUtil() {
+	}
+
+	/**
+	 * Reads the given URL into a byte array
+	 * 
+	 * @param url
+	 *            the url to read
+	 * @return the contents of the URL as a byte array
+	 * @throws IOException
+	 *             if an IO exception occurs
+	 */
 	public static byte[] readBytes(URL url) throws IOException {
 		InputStream inputStream = url.openStream();
 		ByteArrayOutputStream data = new ByteArrayOutputStream();

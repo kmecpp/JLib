@@ -15,6 +15,19 @@ public final class StringUtil {
 	}
 
 	/**
+	 * Gets the last character of the string or null if the string is empty
+	 * 
+	 * @param str
+	 *            the string to get the last character from
+	 * @return the last character in the string
+	 */
+	public static Character last(String str) {
+		return str.length() > 0
+				? str.charAt(str.length() - 1)
+				: null;
+	}
+
+	/**
 	 * Gets whether or not the string starts with the given prefix, ignoring
 	 * case.
 	 * 

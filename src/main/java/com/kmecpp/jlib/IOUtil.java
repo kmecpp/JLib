@@ -1,12 +1,28 @@
 package com.kmecpp.jlib;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public final class IOUtil {
+public class IOUtil {
 
-	private IOUtil() {
+	public static final short DEFAULT_BUFFER_SIZE = 4096;
+
+	public static byte[] readBytes(URL url) throws IOException {
+		InputStream inputStream = url.openStream();
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+
+		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+		int pos = 0;
+		while ((pos = inputStream.read(buffer, 0, buffer.length)) != -1) {
+			data.write(buffer, 0, pos);
+		}
+
+		data.flush();
+
+		return data.toByteArray();
 	}
 
 	/**
@@ -19,7 +35,7 @@ public final class IOUtil {
 	 * @throws IOException
 	 *             if an error occurs while reading from the URL
 	 */
-	public static String read(URL url) throws IOException {
+	public static String readString(URL url) throws IOException {
 		return StringUtil.read(new InputStreamReader(url.openStream()));
 	}
 

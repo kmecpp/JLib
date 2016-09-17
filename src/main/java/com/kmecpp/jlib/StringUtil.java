@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Arrays;
 
+import com.kmecpp.jlib.object.SerializableObject;
+
 /**
  * A utility class for manipulating text
  */
@@ -228,16 +230,18 @@ public class StringUtil {
 	}
 
 	/**
-	 * Serializes any given object to a string
+	 * Serializes any given object to a string. If the object does not implement
+	 * the serializable interface, it will be wrapped in a
+	 * {@link SerializableObject} instance.
 	 * 
 	 * @param obj
 	 *            the object to serialize
 	 * @return the serialized form of the object
 	 */
-	public static String serialize(Serializable obj) {
+	public static String serialize(Object obj) {
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try (ObjectOutputStream stream = new ObjectOutputStream(target)) {
-			stream.writeObject(obj);
+			stream.writeObject(obj instanceof Serializable ? obj : new SerializableObject(obj));
 			return target.toString();
 		} catch (IOException e) {
 			throw new RuntimeException("Could not serialize the object", e);
@@ -245,15 +249,18 @@ public class StringUtil {
 	}
 
 	/**
-	 * Deserializes any given object from a string, assuming its class
-	 * implements the serializable interface
+	 * Deserializes any given object from a string
 	 * 
 	 * @param str
 	 *            the string to deserialize
 	 * @return the object representation of the String
 	 */
-	public static Object deserialize(String str) throws ClassNotFoundException {
-		return deserialize(str, Serializable.class);
+	public static Object deserialize(String str) {
+		try {
+			return deserialize(str, Object.class);
+		} catch (ClassNotFoundException e) {
+			throw new Error("java.lang.Object not found on classpath!", e);
+		}
 	}
 
 	/**
@@ -267,10 +274,13 @@ public class StringUtil {
 	 *            the class to cast the object to
 	 * @return the object representation of the String
 	 */
-	public static <T extends Serializable> T deserialize(String str, Class<T> c) throws ClassNotFoundException {
+	public static <T> T deserialize(String str, Class<T> c) throws ClassNotFoundException {
 		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes());
 		try (ObjectInputStream stream = new ObjectInputStream(target)) {
-			return c.cast(stream.readObject());
+			Object object = stream.readObject();
+			return c.cast(object instanceof SerializableObject
+					? ((SerializableObject) object).getObject()
+					: object);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not deserialize the string", e);
 		}

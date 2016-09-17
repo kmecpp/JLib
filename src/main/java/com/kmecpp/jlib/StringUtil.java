@@ -28,6 +28,30 @@ public class StringUtil {
 	}
 
 	/**
+	 * Deletes the last character from the {@link StringBuilder} and returns the
+	 * builder
+	 * 
+	 * @param sb
+	 *            the string builder to delete from
+	 * @return the string builder
+	 */
+	public static StringBuilder deleteLast(StringBuilder sb) {
+		sb.setLength(sb.length() - 1);
+		return sb;
+	}
+
+	/**
+	 * Deletes the last character from the string and returns the result
+	 * 
+	 * @param str
+	 *            the string to delete from
+	 * @return the string with the last character removed
+	 */
+	public static String deleteLast(String str) {
+		return str.substring(0, str.length() - 1);
+	}
+
+	/**
 	 * Gets whether or not the string starts with the given prefix, ignoring
 	 * case.
 	 * 

@@ -1,8 +1,13 @@
 package com.kmecpp.jlib;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Arrays;
 
@@ -220,6 +225,55 @@ public class StringUtil {
 		PrintWriter pw = new PrintWriter(sw, true);
 		throwable.printStackTrace(pw);
 		return sw.getBuffer().toString();
+	}
+
+	/**
+	 * Serializes any given object to a string
+	 * 
+	 * @param obj
+	 *            the object to serialize
+	 * @return the serialized form of the object
+	 */
+	public static String serialize(Serializable obj) {
+		ByteArrayOutputStream target = new ByteArrayOutputStream();
+		try (ObjectOutputStream stream = new ObjectOutputStream(target)) {
+			stream.writeObject(obj);
+			return target.toString();
+		} catch (IOException e) {
+			throw new RuntimeException("Could not serialize the object", e);
+		}
+	}
+
+	/**
+	 * Deserializes any given object from a string, assuming its class
+	 * implements the serializable interface
+	 * 
+	 * @param str
+	 *            the string to deserialize
+	 * @return the object representation of the String
+	 */
+	public static Object deserialize(String str) throws ClassNotFoundException {
+		return deserialize(str, Object.class);
+	}
+
+	/**
+	 * Deserializes any given object from a string, assuming its class
+	 * implements the serializable interface, and then casts it to the specified
+	 * class
+	 * 
+	 * @param str
+	 *            the string to deserialize
+	 * @param c
+	 *            the class to cast the object to
+	 * @return the object representation of the String
+	 */
+	public static <T> T deserialize(String str, Class<T> c) throws ClassNotFoundException {
+		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes());
+		try (ObjectInputStream stream = new ObjectInputStream(target)) {
+			return c.cast(stream.readObject());
+		} catch (IOException e) {
+			throw new RuntimeException("Could not deserialize the string", e);
+		}
 	}
 
 	/**

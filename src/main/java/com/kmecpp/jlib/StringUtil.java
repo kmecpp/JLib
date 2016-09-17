@@ -253,7 +253,7 @@ public class StringUtil {
 	 * @return the object representation of the String
 	 */
 	public static Object deserialize(String str) throws ClassNotFoundException {
-		return deserialize(str, Object.class);
+		return deserialize(str, Serializable.class);
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class StringUtil {
 	 *            the class to cast the object to
 	 * @return the object representation of the String
 	 */
-	public static <T> T deserialize(String str, Class<T> c) throws ClassNotFoundException {
+	public static <T extends Serializable> T deserialize(String str, Class<T> c) throws ClassNotFoundException {
 		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes());
 		try (ObjectInputStream stream = new ObjectInputStream(target)) {
 			return c.cast(stream.readObject());

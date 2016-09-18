@@ -3,6 +3,8 @@ package com.kmecpp.jlib;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
@@ -10,8 +12,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Arrays;
-
-import com.kmecpp.jlib.object.SerializableObject;
 
 /**
  * A utility class for manipulating text
@@ -193,7 +193,7 @@ public class StringUtil {
 	 *            the array whose String representation to return
 	 * @return the String representation of the contents of the array
 	 */
-	public static String join(String[] array) {
+	public static String join(Object[] array) {
 		return join(array, " ");
 	}
 
@@ -230,41 +230,43 @@ public class StringUtil {
 	}
 
 	/**
-	 * Serializes any given object to a string. If the object does not implement
-	 * the serializable interface, it will be wrapped in a
-	 * {@link SerializableObject} instance.
+	 * Serializes the given object to a string
 	 * 
 	 * @param obj
 	 *            the object to serialize
 	 * @return the serialized form of the object
+	 * @throws NotSerializableException
+	 *             if the given object cannot be serialized
 	 */
-	public static String serialize(Object obj) {
+	public static String serialize(Serializable obj) throws NotSerializableException {
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try (ObjectOutputStream stream = new ObjectOutputStream(target)) {
-			stream.writeObject(obj instanceof Serializable ? obj : new SerializableObject(obj));
+			stream.writeObject(obj);
 			return target.toString();
+		} catch (NotSerializableException e) {
+			throw e;
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Could not serialize the object", e);
 		}
 	}
 
 	/**
-	 * Deserializes any given object from a string
+	 * Deserializes an object from the string assuming its class implements the
+	 * serializable interface.
 	 * 
 	 * @param str
 	 *            the string to deserialize
 	 * @return the object representation of the String
+	 * @throws InvalidClassException
+	 *             if the given string does not represent a valid class
 	 */
-	public static Object deserialize(String str) {
-		try {
-			return deserialize(str, Object.class);
-		} catch (ClassNotFoundException e) {
-			throw new Error("java.lang.Object not found on classpath!", e);
-		}
+	public static Object deserialize(String str) throws InvalidClassException {
+		return deserialize(str, Serializable.class);
 	}
 
 	/**
-	 * Deserializes any given object from a string, assuming its class
+	 * Deserializes an object from the string, assuming its class
 	 * implements the serializable interface, and then casts it to the specified
 	 * class
 	 * 
@@ -272,17 +274,25 @@ public class StringUtil {
 	 *            the string to deserialize
 	 * @param c
 	 *            the class to cast the object to
+	 * @throws RuntimeException
+	 *             if an error occurs during deserialization
 	 * @return the object representation of the String
+	 * @throws InvalidClassException
+	 *             if the given string does not represent a valid class
+	 * @throws ClassCastException
+	 *             if the object is is not assignable to the type
 	 */
-	public static <T> T deserialize(String str, Class<T> c) throws ClassNotFoundException {
+	public static <T extends Serializable> T deserialize(String str, Class<T> c) throws InvalidClassException {
 		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes());
 		try (ObjectInputStream stream = new ObjectInputStream(target)) {
 			Object object = stream.readObject();
-			return c.cast(object instanceof SerializableObject
-					? ((SerializableObject) object).getObject()
-					: object);
+			return c.cast(object);
+		} catch (InvalidClassException e) {
+			throw e;
 		} catch (IOException e) {
 			throw new RuntimeException("Could not deserialize the string", e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Class not found!", e);
 		}
 	}
 

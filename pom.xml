@@ -7,6 +7,10 @@
 	<name>JLib</name>
 	<description>An extremely lightweight collection of basic Java libraries</description>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>

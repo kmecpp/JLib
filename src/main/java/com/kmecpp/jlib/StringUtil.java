@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -242,7 +243,7 @@ public class StringUtil {
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try (ObjectOutputStream stream = new ObjectOutputStream(target)) {
 			stream.writeObject(obj);
-			return target.toString();
+			return new String(target.toByteArray(), StandardCharsets.ISO_8859_1);
 		} catch (NotSerializableException e) {
 			throw e;
 		} catch (IOException e) {
@@ -283,7 +284,7 @@ public class StringUtil {
 	 *             if the object is is not assignable to the type
 	 */
 	public static <T extends Serializable> T deserialize(String str, Class<T> c) throws InvalidClassException {
-		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes());
+		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes(StandardCharsets.ISO_8859_1));
 		try (ObjectInputStream stream = new ObjectInputStream(target)) {
 			Object object = stream.readObject();
 			return c.cast(object);

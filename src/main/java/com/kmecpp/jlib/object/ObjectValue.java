@@ -2,9 +2,9 @@ package com.kmecpp.jlib.object;
 
 public class ObjectValue {
 
-	private final Object object;
+	protected final Object object;
 
-	private ObjectValue(Object object) {
+	protected ObjectValue(Object object) {
 		this.object = object;
 	}
 
@@ -16,12 +16,26 @@ public class ObjectValue {
 		return object == null;
 	}
 
+	public Object asObject() {
+		return object;
+	}
+
+	//String
+	public boolean isString() {
+		return object instanceof String;
+	}
+
 	public String asString() {
 		return (String) object;
 	}
 
 	public String asString(String def) {
 		return isNull() ? def : asString();
+	}
+
+	//Boolean
+	public boolean isBoolean() {
+		return object instanceof Boolean;
 	}
 
 	public boolean asBoolean() {
@@ -32,12 +46,22 @@ public class ObjectValue {
 		return isNull() ? def : asBoolean();
 	}
 
+	//Integer
+	public boolean isInt() {
+		return object instanceof Integer;
+	}
+
 	public int asInt() {
 		return (int) object;
 	}
 
 	public int asInt(int def) {
 		return isNull() ? def : asInt();
+	}
+
+	//Long
+	public boolean isLong() {
+		return object instanceof Long;
 	}
 
 	public long asLong() {
@@ -48,12 +72,22 @@ public class ObjectValue {
 		return isNull() ? def : asLong();
 	}
 
+	//Float
+	public boolean isFloat() {
+		return object instanceof Float;
+	}
+
 	public float asFloat() {
 		return (float) object;
 	}
 
 	public float asFloat(float def) {
 		return isNull() ? def : asFloat();
+	}
+
+	//Double
+	public boolean isDouble() {
+		return object instanceof Double;
 	}
 
 	public double asDouble() {

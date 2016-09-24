@@ -1,4 +1,4 @@
-package com.kmecpp.jlib;
+package com.kmecpp.jlib.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

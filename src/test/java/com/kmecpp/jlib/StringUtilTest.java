@@ -1,6 +1,6 @@
 package com.kmecpp.jlib;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InvalidClassException;
@@ -9,7 +9,25 @@ import java.io.Serializable;
 
 import org.junit.Test;
 
+import com.kmecpp.jlib.utils.StringUtil;
+
 public class StringUtilTest {
+
+	@Test
+	public void testDeleteLast() {
+		assertEquals(StringUtil.deleteLast("test"), "tes");
+		assertEquals(StringUtil.deleteLast(""), "");
+	}
+
+	@Test
+	public void testDelete() {
+		assertEquals(StringUtil.delete("test", 3), "t");
+		assertEquals(StringUtil.delete("test", -3), "t");
+		assertEquals(StringUtil.delete("test", 10), "");
+		assertEquals(StringUtil.delete("test", -10), "");
+		assertEquals(StringUtil.delete("test", -1), "tes");
+		assertEquals(StringUtil.delete("test", -0), "test");
+	}
 
 	@Test
 	public void testVowel() {

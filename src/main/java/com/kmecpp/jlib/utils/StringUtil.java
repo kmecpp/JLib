@@ -1,4 +1,4 @@
-package com.kmecpp.jlib;
+package com.kmecpp.jlib.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +36,50 @@ public class StringUtil {
 	}
 
 	/**
+	 * Deletes the specified amount of characters from the
+	 * {@link StringBuilder}. If the amount value is negative the characters are
+	 * deleted from right to left
+	 * 
+	 * @param sb
+	 *            the string builder from which to delete
+	 * @param amount
+	 *            the amount of characters
+	 * @return the string builder
+	 */
+	public static StringBuilder delete(StringBuilder sb, int amount) {
+		if (Math.abs(amount) >= sb.length()) {
+			sb.setLength(0);
+		} else if (amount >= 0) {
+			sb.delete(0, amount);
+		} else {
+			sb.setLength(sb.length() - amount);
+		}
+		return sb;
+	}
+
+	/**
+	 * Deletes the specified amount of characters from the String. If the amount
+	 * value is negative the characters are deleted from right to left. If the
+	 * amount is greater than or equal to the length of the string, all
+	 * characters are removed and no exception is thrown
+	 * 
+	 * @param sb
+	 *            the string from which to delete
+	 * @param amount
+	 *            the amount of characters
+	 * @return a new string with the characters deleted
+	 */
+	public static String delete(String str, int amount) {
+		if (Math.abs(amount) >= str.length()) {
+			return "";
+		}
+
+		return amount >= 0
+				? str.substring(amount)
+				: str.substring(0, str.length() + amount);
+	}
+
+	/**
 	 * Deletes the last character from the {@link StringBuilder} and returns the
 	 * builder
 	 * 
@@ -44,8 +88,7 @@ public class StringUtil {
 	 * @return the string builder
 	 */
 	public static StringBuilder deleteLast(StringBuilder sb) {
-		sb.setLength(sb.length() - 1);
-		return sb;
+		return delete(sb, -1);
 	}
 
 	/**
@@ -56,7 +99,7 @@ public class StringUtil {
 	 * @return the string with the last character removed
 	 */
 	public static String deleteLast(String str) {
-		return str.substring(0, str.length() - 1);
+		return delete(str, -1);
 	}
 
 	/**

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.kmecpp.jlib.IOUtil;
-import com.kmecpp.jlib.StringUtil;
+import com.kmecpp.jlib.utils.IOUtil;
+import com.kmecpp.jlib.utils.StringUtil;
 
 public class ResourceLocation {
 

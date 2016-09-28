@@ -155,6 +155,27 @@ public class StringUtil {
 	}
 
 	/**
+	 * Returns either "a" or "an" depending on whether or not the starting
+	 * letter in the given string is a vowel. The value will be "an" if the
+	 * first letter is a vowel, and "a" if it is not. This method is useful when
+	 * displaying a message with a variable word after this specific article.
+	 * For example,
+	 * 
+	 * <br>
+	 * 
+	 * <pre>
+	 * You selected a/an {apple/bar}
+	 * </pre>
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @return the proper article
+	 */
+	public static String article(String str) {
+		return vowel(str) ? "an" : "a";
+	}
+
+	/**
 	 * Tests whether or not the given string starts with a vowel, and returns
 	 * true if it does and false if it does not
 	 * 

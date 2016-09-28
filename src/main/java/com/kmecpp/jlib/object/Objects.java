@@ -1,11 +1,74 @@
 package com.kmecpp.jlib.object;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 
-public final class Objects {
+public class Objects {
 
-	private Objects() {
+	/**
+	 * Converts the given string to its true type by evaluating valid formats.
+	 * If the string is a number it will be converted to an {@link Integer},
+	 * {@link Double}, or {@link Long}. If it is a value of "true" or "false"
+	 * regardless of case, it will be converted to its respective Boolean. A
+	 * value of "null" will return <code>null</code>.
+	 * 
+	 * <br>
+	 * <br>
+	 * 
+	 * If no valid type can be found the original string is returned.
+	 * 
+	 * @param str
+	 *            the string to convert
+	 * @return str converted to its evaluated type
+	 */
+	public static Object typeEval(String str) {
+		Object eval = null;
+		//Numbers
+		try {
+			eval = Integer.parseInt(str);
+		} catch (NumberFormatException e1) {
+			try {
+				eval = Long.parseLong(str);
+			} catch (NumberFormatException e2) {
+				try {
+					eval = Double.parseDouble(str);
+				} catch (NumberFormatException e) {
+				}
+			}
+		}
+		//Boolean
+		if (eval == null) {
+			eval = str.equalsIgnoreCase("true")
+					? (Boolean) true : str.equalsIgnoreCase("false")
+							? false : null;
+		}
+		//Array
+		if (eval == null) {
+			try {
+				ArrayList<Object> list = new ArrayList<>();
+				convert: {
+					for (String s : Arrays.asList(str.trim().substring(1, str.length() - 1).split(","))) {
+						Object element = typeEval(s.trim());
+						list.add(element);
+						if (list.get(0).getClass() != element.getClass()) {
+							break convert;
+						}
+					}
+					eval = list; //If all elements of the same type
+				}
+			} catch (Exception e) {
+				//Array parse exception
+			}
+		}
+		//Null
+		if (eval == null) {
+			if (str.equalsIgnoreCase("null")) {
+				return null;
+			}
+		}
+
+		return eval != null ? eval : str;
 	}
 
 	/**

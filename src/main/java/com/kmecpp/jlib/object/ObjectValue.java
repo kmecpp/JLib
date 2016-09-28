@@ -2,6 +2,8 @@ package com.kmecpp.jlib.object;
 
 public class ObjectValue {
 
+	public static final ObjectValue NULL = new ObjectValue(null);
+
 	protected final Object object;
 
 	protected ObjectValue(Object object) {

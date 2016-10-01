@@ -110,8 +110,8 @@ public abstract class CollectionsUtil {
 	 */
 	public static <O, N> ArrayList<N> convert(List<O> list, Converter<O, N> converter) {
 		ArrayList<N> converted = new ArrayList<>();
-		for (O object : list) {
-			converted.add(converter.convert(object));
+		for (O element : list) {
+			converted.add(converter.convert(element));
 		}
 		return converted;
 	}

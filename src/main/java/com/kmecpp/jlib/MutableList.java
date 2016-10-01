@@ -1,5 +1,6 @@
 package com.kmecpp.jlib;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -51,8 +52,8 @@ public class MutableList<E> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public E[] getArray() {
-		return (E[]) list.toArray();
+	public E[] getArray(Class<?> type) {
+		return list.toArray((E[]) Array.newInstance(type, list.size()));
 	}
 
 	public ArrayList<E> getList() {

@@ -1,4 +1,4 @@
-package com.kmecpp.jlib;
+package com.kmecpp.jlib.utils;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -12,6 +12,18 @@ import org.junit.Test;
 import com.kmecpp.jlib.utils.StringUtil;
 
 public class StringUtilTest {
+
+	@Test
+	public void testContains() {
+		assertTrue(StringUtil.contains("test", "t", "test", "es", "st"));
+		assertTrue(StringUtil.containsAll("test", "t", "test", "es", "st"));
+		assertTrue(StringUtil.containsIgnoreCase("test", "t", "TeSt", "ES", "ST"));
+		assertTrue(StringUtil.containsIgnoreCase("test", "t", "B"));
+		assertTrue(StringUtil.containsIgnoreCase("test", "t", "B", "tester"));
+		assertTrue(StringUtil.containsAllIgnoreCase("test", "t", "TeSt", "ES", "ST"));
+		assertFalse(StringUtil.containsAll("test", "test", "Test"));
+		assertFalse(StringUtil.containsAllIgnoreCase("test", "t", "B"));
+	}
 
 	@Test
 	public void testDeleteLast() {

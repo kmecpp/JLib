@@ -123,31 +123,126 @@ public class StringUtil {
 	}
 
 	/**
-	 * Gets whether or not the string starts with the given prefix, ignoring
-	 * case.
+	 * Gets whether or not the string starts with any of the given prefixes.
+	 * This method is case sensitive.
 	 * 
 	 * @param str
 	 *            the string to test
-	 * @param prefix
-	 *            the prefix to test for
-	 * @return true if the string starts with the prefix and false if it does
-	 *         not
+	 * @param prefixes
+	 *            the prefixes to test for
+	 * @return true if the string starts with any of the prefixes case
+	 *         sensitive, and false if it does not
 	 */
-	public static boolean startsWithIgnoreCase(String str, String prefix) {
-		return str.toLowerCase().startsWith(prefix.toLowerCase());
+	public static boolean startsWith(String str, String... prefixes) {
+		for (String prefix : prefixes) {
+			if (str.startsWith(prefix)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
-	 * Gets whether or not the string contains the specified sequence
+	 * Gets whether or not the string starts with any of the given prefixes.
+	 * This method ignores the case of the prefixes.
 	 * 
 	 * @param str
 	 *            the string to test
-	 * @param sequence
-	 *            the sequence to search for
-	 * @return true if the string contains the sequence, false otherwise
+	 * @param prefixes
+	 *            the prefixes to test for
+	 * @return true if the string starts any of the the prefixes ignoring case,
+	 *         and false if it does not
 	 */
-	public static boolean containsIgnoreCase(String str, String sequence) {
-		return str.toLowerCase().contains(sequence.toLowerCase());
+	public static boolean startsWithIgnoreCase(String str, String... prefixes) {
+		String lower = str.toLowerCase();
+		for (String prefix : prefixes) {
+			if (lower.startsWith(prefix.toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Gets whether or not the string contains any of the given sequences. This
+	 * method is case sensitive.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param sequences
+	 *            the sequences to search for
+	 * @return true if the string contains any of the sequences case sensitive,
+	 *         false otherwise
+	 */
+	public static boolean contains(String str, String... sequences) {
+		for (String sequence : sequences) {
+			if (str.contains(sequence)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Gets whether or not the string contains any of the given sequences. This
+	 * method ignores the case of the sequences.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param sequences
+	 *            the sequence to search for
+	 * @return true if the string contains any of the sequences ignoring case,
+	 *         false otherwise
+	 */
+	public static boolean containsIgnoreCase(String str, String... sequences) {
+		String lower = str.toLowerCase();
+		for (String sequence : sequences) {
+			if (lower.contains(sequence.toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Gets whether or not the string contains all of the given sequences. This
+	 * method is case sensitive.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param sequences
+	 *            the sequences to search for
+	 * @return true if the string contains all of the sequences case sensitive,
+	 *         false otherwise
+	 */
+	public static boolean containsAll(String str, String... sequences) {
+		for (String sequence : sequences) {
+			if (!str.contains(sequence)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Gets whether or not the string contains all of the given sequences. This
+	 * method ignores the case of the sequences.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param sequences
+	 *            the sequence to search for
+	 * @return true if the string contains all of the sequences ignoring
+	 *         case, false otherwise
+	 */
+	public static boolean containsAllIgnoreCase(String str, String... sequences) {
+		String lower = str.toLowerCase();
+		for (String sequence : sequences) {
+			if (!lower.contains(sequence.toLowerCase())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

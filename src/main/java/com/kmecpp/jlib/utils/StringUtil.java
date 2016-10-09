@@ -123,6 +123,46 @@ public class StringUtil {
 	}
 
 	/**
+	 * Tests whether or not the string is equal to any of the given strings.
+	 * This method is case sensitive.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param strings
+	 *            the strings to test equality with
+	 * @return true if the string is equal to any of the given strings case
+	 *         sensitive, false otherwise
+	 */
+	public static boolean equals(String str, String... strings) {
+		for (String string : strings) {
+			if (str.equals(string)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Tests whether or not the string is equal to any of the given strings.
+	 * This method ignores case.
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @param strings
+	 *            the strings to test equality with
+	 * @return true if the string is equal to any of the given strings ignoring
+	 *         case, false otherwise
+	 */
+	public static boolean equalsIgnoreCase(String str, String... strings) {
+		for (String string : strings) {
+			if (str.equalsIgnoreCase(string)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Gets whether or not the string starts with any of the given prefixes.
 	 * This method is case sensitive.
 	 * 

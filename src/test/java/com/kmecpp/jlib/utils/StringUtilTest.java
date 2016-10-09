@@ -14,6 +14,20 @@ import com.kmecpp.jlib.utils.StringUtil;
 public class StringUtilTest {
 
 	@Test
+	public void testEquals() {
+		assertTrue(StringUtil.equals("test", "t", "test", "es"));
+		assertTrue(StringUtil.equalsIgnoreCase("test", "T", "TeST", "es"));
+		assertFalse(StringUtil.equals("test", "Test", "Test"));
+	}
+
+	@Test
+	public void testStartsWith() {
+		assertTrue(StringUtil.startsWith("test", "T", "t", "es"));
+		assertTrue(StringUtil.startsWithIgnoreCase("test", "TeST", "es"));
+		assertFalse(StringUtil.startsWith("test", "T", "TeST", "es"));
+	}
+
+	@Test
 	public void testContains() {
 		assertTrue(StringUtil.contains("test", "t", "test", "es", "st"));
 		assertTrue(StringUtil.containsAll("test", "t", "test", "es", "st"));

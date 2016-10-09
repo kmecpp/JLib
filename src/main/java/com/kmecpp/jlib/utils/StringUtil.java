@@ -11,8 +11,11 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A utility class for manipulating text
@@ -20,6 +23,23 @@ import java.util.Arrays;
 public class StringUtil {
 
 	protected StringUtil() {
+	}
+
+	/**
+	 * Constructs a new {@link URL} from the String. This method is intended to
+	 * be used with hardcoded String URL's and as result rethrows
+	 * {@link MalformedURLException}s as a {@link RuntimeException}
+	 * 
+	 * @param str
+	 *            the string to convert to a URL
+	 * @return A URL object from the String representation
+	 */
+	public static URL toURL(String str) {
+		try {
+			return new URL(str);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -279,6 +299,26 @@ public class StringUtil {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < arr.length; i++) {
 			sb.append((i == 0 ? "" : delimiter) + arr[i].toString());
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Converts the {@link Iterable} to a {@link String}, separated by the given
+	 * delimiter
+	 * 
+	 * @param arr
+	 *            the iterable whose String representation to return
+	 * @param delimiter
+	 *            the separator String
+	 * @return the String representation of the elements of the iterable
+	 *         separated by the given delimiter
+	 */
+	public static String join(Iterable<?> iterable, String delimiter) {
+		StringBuilder sb = new StringBuilder();
+		Iterator<?> iterator = iterable.iterator();
+		while (iterator.hasNext()) {
+			sb.append(iterator.next() + (iterator.hasNext() ? delimiter : ""));
 		}
 		return sb.toString();
 	}

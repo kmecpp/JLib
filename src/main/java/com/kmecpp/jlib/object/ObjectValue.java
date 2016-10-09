@@ -14,6 +14,14 @@ public class ObjectValue {
 		return new ObjectValue(object);
 	}
 
+	public boolean is(Class<?> c) {
+		return object.getClass().isAssignableFrom(c);
+	}
+
+	public <T> T as(Class<T> c) {
+		return c.cast(object);
+	}
+
 	public boolean isNull() {
 		return object == null;
 	}

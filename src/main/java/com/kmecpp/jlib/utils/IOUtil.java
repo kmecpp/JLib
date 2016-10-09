@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class IOUtil {
@@ -47,8 +49,50 @@ public class IOUtil {
 	 * @throws IOException
 	 *             if an error occurs while reading from the URL
 	 */
+	public static String readHttpString(URL url) throws IOException {
+		return readString(getHttpConnection(url).getInputStream());
+	}
+
+	/**
+	 * Attempts to read data into a String from the given URL and returns that
+	 * String
+	 * 
+	 * @param url
+	 *            the url to read from
+	 * @return the data read from the URL
+	 * @throws IOException
+	 *             if an error occurs while reading from the URL
+	 */
 	public static String readString(URL url) throws IOException {
-		return StringUtil.read(new InputStreamReader(url.openStream()));
+		return readString(url.openStream());
+	}
+
+	/**
+	 * High performance read from an {@link InputStream} into a String
+	 * 
+	 * @param inputStream
+	 *            the input stream from which to read
+	 * @return the string read from the reader
+	 * @throws IOException
+	 *             if an IOException occurs
+	 */
+	private static String readString(InputStream inputStream) throws IOException {
+		InputStreamReader reader = new InputStreamReader(inputStream);
+		StringWriter sw = new StringWriter();
+		char[] buffer = new char[4096];
+		int pos = 0;
+		while ((pos = reader.read(buffer)) != -1) {
+			sw.write(buffer, 0, pos);
+		}
+		return sw.toString();
+	}
+
+	public static HttpURLConnection getHttpConnection(URL url) throws IOException {
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+		connection.setConnectTimeout(5000);
+		connection.setReadTimeout(5000);
+		return connection;
 	}
 
 }

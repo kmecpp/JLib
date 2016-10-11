@@ -52,8 +52,8 @@ public class MutableList<E> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public E[] getArray(Class<?> type) {
-		return list.toArray((E[]) Array.newInstance(type, list.size()));
+	public <T> T[] getArray(Class<T> type) {
+		return list.toArray((T[]) Array.newInstance(type, list.size()));
 	}
 
 	public ArrayList<E> getList() {

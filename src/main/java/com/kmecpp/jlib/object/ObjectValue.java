@@ -15,11 +15,15 @@ public class ObjectValue {
 	}
 
 	public boolean is(Class<?> c) {
-		return object.getClass().isAssignableFrom(c);
+		return c.isAssignableFrom(object.getClass());
 	}
 
 	public <T> T as(Class<T> c) {
 		return c.cast(object);
+	}
+
+	public Class<?> getValueClass() {
+		return object.getClass();
 	}
 
 	public boolean isNull() {

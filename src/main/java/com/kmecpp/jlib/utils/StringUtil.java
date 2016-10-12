@@ -43,6 +43,154 @@ public class StringUtil {
 	}
 
 	/**
+	 * <p>
+	 * Ensures that the string is modified according to the parameters to have a
+	 * length exactly equal to the given one.
+	 * </p>
+	 * <p>
+	 * Forwards to ensureLength(str, length, <strong>1</strong>)
+	 * </p>
+	 * 
+	 * @param str
+	 *            the string to modify the length of
+	 * @param length
+	 *            the new length for the string
+	 * @param align
+	 *            a positive value to modify the string from the left, a
+	 *            negative to modify it from the right, and zero to attempt to
+	 *            center the modifications
+	 * @return the modified string according to the rules defined above
+	 */
+	public static String ensureLength(String str, int length) {
+		return ensureLength(str, length, 1);
+	}
+
+	/**
+	 * <p>
+	 * Ensures that the string is modified according to the parameters to have a
+	 * length exactly equal to the given one.
+	 * </p>
+	 * <p>
+	 * Forwards to ensureLength(str, length, align, <strong>true</strong>)
+	 * </p>
+	 * 
+	 * @param str
+	 *            the string to modify the length of
+	 * @param length
+	 *            the new length for the string
+	 * @param align
+	 *            a positive value to modify the string from the left, a
+	 *            negative to modify it from the right, and zero to attempt to
+	 *            center the modifications
+	 * @return the modified string according to the rules defined above
+	 */
+	public static String ensureLength(String str, int length, int align) {
+		return ensureLength(str, length, align, true);
+	}
+
+	/**
+	 * <p>
+	 * Ensures that the string is modified according to the parameters to have a
+	 * length exactly equal to the given one.
+	 * </p>
+	 * <p>
+	 * 1) If the string length is the same as the given one, the string is
+	 * returned.
+	 * </p>
+	 * <p>
+	 * 2) If the string length is less than the given, it is expanded according
+	 * to the <code>align</code> and <code>favorLeft</code> parameters with
+	 * whitespace characters. If <code>align</code> is a negative value, the
+	 * proper amount of whitespace will be prepended to the string. If it is
+	 * positive, the whitespace will be appended to the string. If
+	 * <code>align</code> is zero, the string will be surrounded in the same
+	 * amount of whitespace, and if it cannot be centered exactly in the middle,
+	 * a whitespace character is removed from the right side if
+	 * <code>favorLeft</code> is true, and from the left side if it is false.
+	 * </p>
+	 * <p>
+	 * 3) If the string length is less than the given, it is shortened according
+	 * to the <code>align</code> and <code>favorLeft</code> parameters by
+	 * deleting certain characters. If <code>align</code> is a negative value,
+	 * the proper amount of characters will be deleted from the start of the
+	 * string. If it is positive, they will be deleted from the end. If
+	 * <code>align</code> is zero, the same amount of characters will be deleted
+	 * from either ends of the string. If characters cannot be deleted evenly
+	 * from each side and still attain the required length, an extra character
+	 * is deleted from the right side if <code>favorLeft</code> is true, and
+	 * deleted from the left if it is false.
+	 * </p>
+	 * 
+	 * @param str
+	 *            the string to modify the length of
+	 * @param length
+	 *            the new length for the string
+	 * @param align
+	 *            a positive value to modify the string from the left, a
+	 *            negative to modify it from the right, and zero to attempt to
+	 *            center the modifications
+	 * @param favorLeft
+	 *            a control for the case where align is zero, to change whether
+	 *            the side of the string that should remain the same, if the
+	 *            string cannot be modified evenly on either side
+	 * @return the modified string according to the rules defined above
+	 */
+	public static String ensureLength(String str, int length, int align, boolean favorLeft) {
+		int d = length - str.length(); //The difference in lengths from the length parameter and the string length
+		if (d == 0) {
+			//Same length
+			return str;
+		} else if (d < 0) {
+			//Shorten string
+			return align == 0 ? delete(expand(str, d / 2), (d % 2 * (favorLeft ? 1 : -1)))
+					: align < 0 ? delete(str, -d)
+							: delete(str, length - str.length());
+		} else {
+			//Expand string
+			return align == 0 ? (favorLeft ? "" : whitespace(d % 2)) + expand(str, d / 2) + (favorLeft ? whitespace(d % 2) : "")
+					: align < 0 ? (whitespace(d) + str)
+							: str + (whitespace(d));
+		}
+	}
+
+	/**
+	 * If the amount is positive, this method expands the string by adding the
+	 * given <code>amount</code> of whitespace characters to both ends of the
+	 * string. If it is negative, the same amount of characters are removed from
+	 * both ends of the string. As a result, the string length is increased or
+	 * decreased by double the amount.
+	 * 
+	 * @param str
+	 *            the string to expand
+	 * @param amount
+	 *            the amount by which to expand the string from either end
+	 * @return the expanded string
+	 */
+	public static String expand(String str, int amount) {
+		return amount == 0 ? str
+				: amount > 0 ? new StringBuilder(whitespace(amount * 2)).insert(amount, str).toString()
+						: (str.length() < 2 * -amount) ? "" : str.substring(-amount, str.length() - -amount);
+	}
+
+	/**
+	 * Gets the length of the longest string in the given list, and -1 if no
+	 * strings are given.
+	 * 
+	 * @param strings
+	 *            the strings to search through
+	 * @return the length of the longest string
+	 */
+	public static int longestLength(String... strings) {
+		int max = -1;
+		for (String str : strings) {
+			if (str.length() > max) {
+				max = str.length();
+			}
+		}
+		return max;
+	}
+
+	/**
 	 * Gets the last character of the string or null if the string is empty
 	 * 
 	 * @param str
@@ -79,11 +227,12 @@ public class StringUtil {
 
 	/**
 	 * Deletes the specified amount of characters from the String. If the amount
-	 * value is negative the characters are deleted from right to left. If the
-	 * amount is greater than or equal to the length of the string, all
-	 * characters are removed and no exception is thrown
+	 * value is positive, the characters are deleted from left to right. If it
+	 * is negative, the characters are deleted from right to left. If the amount
+	 * is greater than or equal to the length of the string, all characters are
+	 * removed and no exception is thrown
 	 * 
-	 * @param sb
+	 * @param str
 	 *            the string from which to delete
 	 * @param amount
 	 *            the amount of characters
@@ -272,8 +421,8 @@ public class StringUtil {
 	 *            the string to test
 	 * @param sequences
 	 *            the sequence to search for
-	 * @return true if the string contains all of the sequences ignoring
-	 *         case, false otherwise
+	 * @return true if the string contains all of the sequences ignoring case,
+	 *         false otherwise
 	 */
 	public static boolean containsAllIgnoreCase(String str, String... sequences) {
 		String lower = str.toLowerCase();
@@ -509,9 +658,8 @@ public class StringUtil {
 	}
 
 	/**
-	 * Deserializes an object from the string, assuming its class
-	 * implements the serializable interface, and then casts it to the specified
-	 * class
+	 * Deserializes an object from the string, assuming its class implements the
+	 * serializable interface, and then casts it to the specified class
 	 * 
 	 * @param str
 	 *            the string to deserialize

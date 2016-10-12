@@ -1,6 +1,9 @@
 package com.kmecpp.jlib.utils;
 
-import static org.junit.Assert.*;
+import static com.kmecpp.jlib.utils.StringUtil.ensureLength;
+import static com.kmecpp.jlib.utils.StringUtil.expand;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InvalidClassException;
@@ -9,9 +12,32 @@ import java.io.Serializable;
 
 import org.junit.Test;
 
-import com.kmecpp.jlib.utils.StringUtil;
-
 public class StringUtilTest {
+
+	@Test
+	public void testEnsureLength() {
+		assertEquals(ensureLength("test", 3), "tes");
+		assertEquals(ensureLength("test", 10), "test      ");
+		assertEquals(ensureLength("test", 10, 1), "test      ");
+		assertEquals(ensureLength("test", 10, 0), "   test   ");
+		assertEquals(ensureLength("test", 11, 0), "   test    ");
+		assertEquals(ensureLength("test", 5, -1), " test");
+		assertEquals(ensureLength("test", 2, -1), "st");
+		assertEquals(ensureLength("Tester", 5, 0, true), "Teste");
+		assertEquals(ensureLength("Tester", 5, 0, false), "ester");
+		assertEquals(ensureLength("Tester", 7, 0, false), " Tester");
+	}
+
+	@Test
+	public void testExpand() {
+		assertEquals(expand("test", 0), "test");
+		assertEquals(expand("test", 1), " test ");
+		assertEquals(expand("test", 2), "  test  ");
+		assertEquals(expand("tester", 2), "  tester  ");
+		assertEquals(expand("tester", -1), "este");
+		assertEquals(expand("tester", -2), "st");
+		assertEquals(expand("tester", -10), "");
+	}
 
 	@Test
 	public void testEquals() {

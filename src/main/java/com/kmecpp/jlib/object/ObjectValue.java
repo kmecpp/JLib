@@ -43,6 +43,11 @@ public class ObjectValue {
 		return (String) object;
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(object);
+	}
+
 	public String asString(String def) {
 		return isNull() ? def : asString();
 	}

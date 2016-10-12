@@ -128,4 +128,26 @@ public abstract class CollectionsUtil {
 		return convert(toList(array), converter);
 	}
 
+	/**
+	 * Flattens the collection into a one dimensional list of objects of the
+	 * given type.
+	 * 
+	 * @param collection
+	 *            the collection to flatten
+	 * @param cls
+	 *            the type of the flattened list
+	 * @return the flattened collection
+	 */
+	public static <T> Collection<T> flatten(Collection<?> collection, Class<T> cls) {
+		ArrayList<T> flat = new ArrayList<>();
+		for (Object element : collection) {
+			if (element instanceof Collection<?>) {
+				flat.addAll(flatten((Collection<?>) element, cls));
+			} else {
+				flat.add(cls.cast(element));
+			}
+		}
+		return flat;
+	}
+
 }

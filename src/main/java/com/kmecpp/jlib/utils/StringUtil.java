@@ -43,6 +43,48 @@ public class StringUtil {
 	}
 
 	/**
+	 * Ensures the length of all the strings in the array are modified to have
+	 * the given length.
+	 * <p>
+	 * This method forwards to
+	 * 
+	 * <pre>
+	 * ensureLength(strings, length, <strong>1</strong>, <strong>true</strong>)
+	 * </pre>
+	 * </p>
+	 * 
+	 * @param strings
+	 *            the strings to modify the length of
+	 * @param length
+	 *            the new length for all the strings in the array
+	 * @return the modified array, for chaining
+	 */
+	public static String[] ensureLength(String[] strings, int length) {
+		return ensureLength(strings, length, 1, true);
+	}
+
+	/**
+	 * Invokes the ensureLength(str, length, align, favorLeft) method on all of
+	 * he strings in the array.
+	 * 
+	 * @param strings
+	 *            the strings to modify the length of
+	 * @param length
+	 *            the new length for all the strings in the array
+	 * @param align
+	 *            the align parameter
+	 * @param favorLeft
+	 *            the favorLeft parameter
+	 * @return the modified array, for chaining
+	 */
+	public static String[] ensureLength(String[] strings, int length, int align, boolean favorLeft) {
+		for (int i = 0; i < strings.length; i++) {
+			strings[i] = ensureLength(strings[i], length, align, favorLeft);
+		}
+		return strings;
+	}
+
+	/**
 	 * <p>
 	 * Ensures that the string is modified according to the parameters to have a
 	 * length exactly equal to the given one.
@@ -558,7 +600,7 @@ public class StringUtil {
 	 * Effectively the same as calling:
 	 * 
 	 * <pre>
-	 * StringUtil.join(" ", array);
+	 * StringUtil.join(array, " ");
 	 * </pre>
 	 * 
 	 * @param arr
@@ -570,7 +612,12 @@ public class StringUtil {
 	}
 
 	/**
-	 * Converts the array to a String separated by the given delimiter
+	 * Converts the array to a String separated by the given delimiter. This
+	 * method forwards to
+	 * 
+	 * <pre>
+	 * join(arr, delimiter, false);
+	 * </pre>
 	 * 
 	 * @param arr
 	 *            the array whose String representation to return
@@ -580,11 +627,29 @@ public class StringUtil {
 	 *         by the given delimiter
 	 */
 	public static String join(Object[] arr, String delimiter) {
-		StringBuilder sb = new StringBuilder();
+		return join(arr, delimiter, false);
+	}
+
+	/**
+	 * Converts the array to a String separated by the given delimiter. If
+	 * <code>ends</code> is true, the delimiter is added to either end of the
+	 * string as well.
+	 * 
+	 * @param arr
+	 *            the array whose String representation to return
+	 * @param delimiter
+	 *            the separator String
+	 * @param ends
+	 *            whether or not to add the delimiter to the ends of the string
+	 * @return the String representation of the contents of the array separated
+	 *         by the given delimiter
+	 */
+	public static String join(Object[] arr, String delimiter, boolean ends) {
+		StringBuilder sb = new StringBuilder(ends ? delimiter : "");
 		for (int i = 0; i < arr.length; i++) {
 			sb.append((i == 0 ? "" : delimiter) + arr[i].toString());
 		}
-		return sb.toString();
+		return sb.append(ends ? delimiter : "").toString();
 	}
 
 	/**

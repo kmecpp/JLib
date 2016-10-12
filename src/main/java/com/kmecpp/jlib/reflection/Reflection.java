@@ -14,7 +14,7 @@ public class Reflection {
 	public static <T> T newInstance(Constructor<T> constructor, Object... values) {
 		try {
 			return constructor.newInstance((Object[]) values);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new ReflectionException(e);
 		}
 	}
@@ -22,7 +22,7 @@ public class Reflection {
 	public static <T> T newInstance(Class<T> cls) {
 		try {
 			return cls.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (SecurityException | InstantiationException | IllegalAccessException e) {
 			throw new ReflectionException(e);
 		}
 	}
@@ -44,7 +44,7 @@ public class Reflection {
 		try {
 			return (T) getMethod(cls, methodName, params)
 					.invoke(null, (Object[]) params);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new ReflectionException(e);
 		}
 	}
@@ -54,7 +54,7 @@ public class Reflection {
 		try {
 			return (T) getMethod(obj.getClass(), methodName, params)
 					.invoke(obj, (Object[]) params);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new ReflectionException(e);
 		}
 	}
@@ -79,10 +79,18 @@ public class Reflection {
 
 	public static <T> T getFieldValue(Object object, String fieldName, Class<T> cast) {
 		try {
-			Field field = object.getClass().getDeclaredField(fieldName);
+			return cast.cast(getField(object.getClass(), fieldName).get(object));
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			throw new ReflectionException(e);
+		}
+	}
+
+	public static Field getField(Class<?> cls, String fieldName) {
+		try {
+			Field field = cls.getDeclaredField(fieldName);
 			field.setAccessible(true);
-			return cast.cast(field.get(object));
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			return field;
+		} catch (NoSuchFieldException | SecurityException e) {
 			throw new ReflectionException(e);
 		}
 	}

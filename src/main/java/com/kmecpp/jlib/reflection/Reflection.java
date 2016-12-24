@@ -5,6 +5,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.kmecpp.jlib.function.Converter;
+import com.kmecpp.jlib.utils.ArrayUtil;
+
 public class Reflection {
 
 	public static <T> T newInstance(Constructor<T> constructor) {
@@ -19,8 +22,9 @@ public class Reflection {
 		}
 	}
 
-	public static <T> T newInstance(Class<T> cls) {
+	public static <T> T newInstance(Class<T> cls, Object... values) {
 		try {
+			getConstructor(cls, Class.class);
 			return cls.newInstance();
 		} catch (SecurityException | InstantiationException | IllegalAccessException e) {
 			throw new ReflectionException(e);
@@ -28,7 +32,17 @@ public class Reflection {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> getConstructor(Class<T> cls, Class<?>[] paramTypes) {
+	public static <T> Constructor<T> getConstructor(Class<T> cls, Object... params) {
+		Class<?>[] paramTypes = ArrayUtil.getComponentType(params) instanceof Class
+				? (Class<?>[]) params
+				: ArrayUtil.convert((Object[]) params, new Converter<Object, Class<?>>() {
+
+					@Override
+					public Class<?> convert(Object obj) {
+						return obj.getClass();
+					}
+
+				});
 		for (Constructor<T> constructor : (Constructor<T>[]) cls.getDeclaredConstructors()) {
 			constructor.setAccessible(true);
 			if (constructor.getParameterTypes().equals(paramTypes)) {
@@ -36,7 +50,6 @@ public class Reflection {
 			}
 		}
 		return null;
-		//		throw new ReflectionException("Constructor does not exist!");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,6 +86,14 @@ public class Reflection {
 		}
 	}
 
+	public static Object getStaticValue(Object object, Field field) {
+		return getValue(null, field);
+	}
+
+	public static Object getValue(Object object, Field field) {
+		return getFieldValue(object, field.getName());
+	}
+
 	public static Object getFieldValue(Object object, String fieldName) {
 		return getFieldValue(object, fieldName, Object.class);
 	}
@@ -93,6 +114,19 @@ public class Reflection {
 		} catch (NoSuchFieldException | SecurityException e) {
 			throw new ReflectionException(e);
 		}
+	}
+
+	public static Field[] getAllFields(Object obj) {
+		Class<?> cls = obj.getClass();
+		Field[] declaredFields = cls.getDeclaredFields();
+		Field[] fields = new Field[declaredFields.length];
+
+		for (int i = 0; i < declaredFields.length; i++) {
+			Field field = declaredFields[i];
+			field.setAccessible(true);
+			fields[i] = field;
+		}
+		return fields;
 	}
 
 }

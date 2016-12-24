@@ -488,19 +488,22 @@ public class StringUtil {
 	}
 
 	/**
-	 * Capitalizes the given String, converting the first character to uppercase
-	 * and the rest to lowercase
+	 * Capitalizes the each word in the string by converting the first letter to
+	 * upper case and all subsequent letters to lower case
 	 * 
 	 * @param string
 	 *            the String to capitalize
 	 * @return the capitalized version of the String
 	 */
 	public static String capitalize(String str) {
-		if (str.equals("")) {
+		if (str.isEmpty()) {
 			return "";
 		}
-		return str.substring(0, 1).toUpperCase()
-				+ str.substring(1).toLowerCase();
+		StringBuilder sb = new StringBuilder();
+		for (String word : str.split(" ")) {
+			sb.append(word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase());
+		}
+		return sb.toString();
 	}
 
 	/**

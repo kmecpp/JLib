@@ -4,6 +4,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.kmecpp.jlib.function.Converter;
+
 public class ArrayUtil {
 
 	/**
@@ -97,6 +99,25 @@ public class ArrayUtil {
 	}
 
 	/**
+	 * Converts the array to a new array the type converter
+	 * 
+	 * @param arr
+	 *            the array to convert
+	 * @return the converted array
+	 */
+	@SuppressWarnings("unchecked")
+	public static <O, N> N[] convert(O[] arr, Converter<O, N> converter) {
+		if (arr.length == 0) {
+			return (N[]) new Object[0];
+		}
+		N[] converted = newInstance((Class<N>) converter.convert(arr[0]).getClass(), arr.length);
+		for (int i = 0; i < arr.length; i++) {
+			converted[i] = converter.convert(arr[i]);
+		}
+		return converted;
+	}
+
+	/**
 	 * Flattens the given n-dimensional array to one dimension by combining the
 	 * arrays
 	 * 
@@ -147,8 +168,8 @@ public class ArrayUtil {
 	 * @return the transposed matrix
 	 */
 	public static <T> T[][] transpose(T[][] matrix) {
-		T[][] transpose = newInstance(getComponentType(matrix), matrix[0].length);
-		final int size = longestLength(matrix);
+		int size = longestLength(matrix);
+		T[][] transpose = newInstance(getComponentType(matrix), size);
 		for (int col = 0; col < size; col++) {
 			transpose[col] = getColumn(matrix, col);
 		}

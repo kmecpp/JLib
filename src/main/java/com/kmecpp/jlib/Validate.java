@@ -17,8 +17,25 @@ public final class Validate {
 	 *             if the array length is invalid
 	 */
 	public static void length(Object[] array, int length) {
+		length(array, length, "Invalid array length: " + array.length + ", expecting length: " + length);
+	}
+
+	/**
+	 * Validates that an array has the specified length. If it does not, an
+	 * {@link IllegalArgumentException} is thrown
+	 * 
+	 * @param array
+	 *            the array to test
+	 * @param length
+	 *            the only permitted array length
+	 * @param message
+	 *            the message to display if the length is invalid
+	 * @throws IllegalArgumentException
+	 *             if the array length is invalid
+	 */
+	public static void length(Object[] array, int length, String message) {
 		if (array.length != length) {
-			throw new IllegalArgumentException("Invalid array length: " + array.length + ", expecting length: " + length);
+			throw new IllegalArgumentException(message);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.kmecpp.jlib.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,11 +55,39 @@ public class IOUtil {
 	}
 
 	/**
+	 * Attempts to read data into a String from the given path and returns that
+	 * String
+	 * 
+	 * @param path
+	 *            the path to read from
+	 * @return the data contained at the given path
+	 * @throws IOException
+	 *             if an error occurs while reading from the source
+	 */
+	public static String readString(String path) throws IOException {
+		return readString(new File(path));
+	}
+
+	/**
+	 * Attempts to read data into a String from the given {@link File} and
+	 * returns the contents
+	 * 
+	 * @param file
+	 *            the file to read from
+	 * @return the data contained in the file
+	 * @throws IOException
+	 *             if an error occurs while reading
+	 */
+	public static String readString(File file) throws IOException {
+		return readString(file.toURI().toURL());
+	}
+
+	/**
 	 * Attempts to read data into a String from the given URL and returns that
 	 * String
 	 * 
 	 * @param url
-	 *            the url to read from
+	 *            the URL to read from
 	 * @return the data read from the URL
 	 * @throws IOException
 	 *             if an error occurs while reading from the URL
@@ -87,11 +116,51 @@ public class IOUtil {
 		return sw.toString();
 	}
 
+	/**
+	 * Gets an {@link HttpURLConnection} for the given URL with a read and
+	 * connect timeout of 5 seconds. This method is equivalent to the following:
+	 * 
+	 * <pre>
+	 * getHttpConnection(url, 5000, 5000);
+	 * </pre>
+	 * 
+	 * @param url
+	 *            the URL to connect to
+	 * @return the HTTP URL connection
+	 * @throws IOException
+	 *             if an IOException occurs
+	 */
 	public static HttpURLConnection getHttpConnection(URL url) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 		connection.setConnectTimeout(5000);
 		connection.setReadTimeout(5000);
+		return connection;
+	}
+
+	/**
+	 * Gets an {@link HttpURLConnection} for the given URL with the given
+	 * connection timeout and read timeout. This method also creates the
+	 * connection with a default User-Agent of Mozilla/5.0 to avoid being
+	 * filtered by many sites.
+	 * 
+	 * @param url
+	 *            the URL to connect to
+	 * @param connectTimeout
+	 *            the timeout to use when opening a communications link to the
+	 *            resource referenced by this URLConnection
+	 * @param readTimeout
+	 *            the timeout to use when reading from an input stream when a
+	 *            connection is established to a resource
+	 * @return the HTTP URL connection
+	 * @throws IOException
+	 *             if an IOException occurs
+	 */
+	public static HttpURLConnection getHttpConnection(URL url, int connectTimeout, int readTimeout) throws IOException {
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+		connection.setConnectTimeout(connectTimeout);
+		connection.setReadTimeout(readTimeout);
 		return connection;
 	}
 

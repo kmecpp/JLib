@@ -246,6 +246,25 @@ public class StringUtil {
 	}
 
 	/**
+	 * Trims the ends of the string which do not match the given regular
+	 * expression
+	 * 
+	 * @param str
+	 *            the string to trim
+	 * @param regex
+	 *            the regex to trim with
+	 * @return the trimmed string
+	 */
+	public static String trim(String str, String regex) {
+		int i, j;
+
+		for (i = 0; i < str.length() && !String.valueOf(str.charAt(i)).matches(regex); i++);
+		for (j = str.length(); j > 0 && !String.valueOf(str.charAt(j - 1)).matches(regex); j--);
+
+		return str.substring(i, j);
+	}
+
+	/**
 	 * Deletes the specified amount of characters from the
 	 * {@link StringBuilder}. If the amount value is negative the characters are
 	 * deleted from right to left
@@ -477,13 +496,27 @@ public class StringUtil {
 	}
 
 	/**
-	 * Splits the string into an array of its lines
+	 * Splits the string into an array of its lines, which it assumes are
+	 * separated by '\n' characters.
 	 * 
 	 * @param str
 	 *            the string to split
 	 * @return an array of the string's lines
 	 */
 	public static String[] getLines(String str) {
+		return str.split("\n");
+	}
+
+	/**
+	 * Splits the string into an array of its lines. This method uses the
+	 * current systems line separator to split the string. Usually it is better
+	 * just use getLines(String) which splits on each '\n' character.
+	 * 
+	 * @param str
+	 *            the string to split
+	 * @return an array of the string's lines
+	 */
+	public static String[] getSystemLines(String str) {
 		return str.split(System.lineSeparator());
 	}
 
@@ -650,7 +683,7 @@ public class StringUtil {
 	public static String join(Object[] arr, String delimiter, boolean ends) {
 		StringBuilder sb = new StringBuilder(ends ? delimiter : "");
 		for (int i = 0; i < arr.length; i++) {
-			sb.append((i == 0 ? "" : delimiter) + arr[i].toString());
+			sb.append((i == 0 ? "" : delimiter) + arr[i]);
 		}
 		return sb.append(ends ? delimiter : "").toString();
 	}

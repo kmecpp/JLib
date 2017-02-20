@@ -107,10 +107,22 @@ public class ArrayUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <O, N> N[] convert(O[] arr, Converter<O, N> converter) {
+		return convert(arr, (Class<N>) (arr.length == 0 ? Object.class : converter.convert(arr[0]).getClass()), converter);
+	}
+
+	/**
+	 * Converts the array to a new array the type converter
+	 * 
+	 * @param arr
+	 *            the array to convert
+	 * @return the converted array
+	 */
+	@SuppressWarnings("unchecked")
+	public static <O, N> N[] convert(O[] arr, Class<N> newClass, Converter<O, N> converter) {
 		if (arr.length == 0) {
 			return (N[]) new Object[0];
 		}
-		N[] converted = newInstance((Class<N>) converter.convert(arr[0]).getClass(), arr.length);
+		N[] converted = newInstance(newClass, arr.length);
 		for (int i = 0; i < arr.length; i++) {
 			converted[i] = converter.convert(arr[i]);
 		}

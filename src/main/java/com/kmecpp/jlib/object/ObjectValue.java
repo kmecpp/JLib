@@ -30,7 +30,7 @@ public class ObjectValue {
 		return object == null;
 	}
 
-	public Object asObject() {
+	public Object get() {
 		return object;
 	}
 

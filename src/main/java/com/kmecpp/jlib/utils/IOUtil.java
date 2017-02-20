@@ -164,4 +164,21 @@ public class IOUtil {
 		return connection;
 	}
 
+	/**
+	 * Helper method for closing resources. If the resource cannot be closed, an
+	 * exception is printed but not thrown.
+	 * 
+	 * @param close
+	 *            the autocloseable's to close
+	 */
+	public static void close(AutoCloseable... close) {
+		for (AutoCloseable closeable : close) {
+			try {
+				closeable.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 }

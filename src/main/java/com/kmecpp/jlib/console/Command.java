@@ -11,6 +11,7 @@ public abstract class Command implements CommandExecutor {
 
 	private String[] args = new String[0];
 	private String description = "";
+	private boolean matchArgs = false;
 
 	public Command(String[] aliases) {
 		Validate.length(aliases, 1, "Command must have at least one alias!");
@@ -52,6 +53,14 @@ public abstract class Command implements CommandExecutor {
 
 	public String getUsage() {
 		return getPrimaryAlias().toUpperCase() + " " + StringUtil.join(args);
+	}
+
+	public boolean matchArgs() {
+		return matchArgs;
+	}
+
+	public void setMatchArgs(boolean matchArgs) {
+		this.matchArgs = matchArgs;
 	}
 
 	public boolean hasAlias(String alias) {

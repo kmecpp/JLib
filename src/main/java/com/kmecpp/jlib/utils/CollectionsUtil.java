@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.kmecpp.jlib.function.Converter;
@@ -14,6 +15,18 @@ import com.kmecpp.jlib.function.Predicate;
  * server is still running version 7
  */
 public abstract class CollectionsUtil {
+
+	/**
+	 * Clones the list and then appends the specified elements to the end of of
+	 * the new list.
+	 * 
+	 * @return a new list with the given values added to it
+	 */
+	public static <E> LinkedList<E> add(LinkedList<E> list, E value) {
+		LinkedList<E> copy = new LinkedList<>(list);
+		copy.add(value);
+		return copy;
+	}
 
 	/**
 	 * Tests whether or not there is an element in the Collection matching the

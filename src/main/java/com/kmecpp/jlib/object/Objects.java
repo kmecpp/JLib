@@ -39,9 +39,8 @@ public class Objects {
 		}
 		//Boolean
 		if (eval == null) {
-			eval = str.equalsIgnoreCase("true")
-					? (Boolean) true : str.equalsIgnoreCase("false")
-							? false : null;
+			eval = str.equalsIgnoreCase("true") ? (Boolean) true
+					: str.equalsIgnoreCase("false") ? false : null;
 		}
 		//Array
 		if (eval == null) {

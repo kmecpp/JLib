@@ -11,11 +11,15 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.UUID;
+
+import com.kmecpp.jlib.reflection.Reflection;
 
 /**
  * A utility class for manipulating text
@@ -23,6 +27,19 @@ import java.util.Iterator;
 public class StringUtil {
 
 	protected StringUtil() {
+	}
+
+	public static Object parseType(String str, Class<?> cls) {
+		//@formatter:off
+		return Reflection.isAssignable(cls, String.class) ? str
+				: Reflection.isAssignable(cls, Boolean.class, boolean.class) ? Boolean.parseBoolean(str)
+				: Reflection.isAssignable(cls, Integer.class, int.class) ? Integer.parseInt(str)
+				: Reflection.isAssignable(cls, Long.class, long.class) ? Long.parseLong(str)
+				: Reflection.isAssignable(cls, Float.class, float.class) ? Float.parseFloat(str)
+				: Reflection.isAssignable(cls, Double.class, double.class) ? Double.parseDouble(str)
+				: Reflection.isAssignable(cls, UUID.class) ? UUID.fromString(str)
+				: str;
+		//@formatter:on
 	}
 
 	/**
@@ -40,6 +57,26 @@ public class StringUtil {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Gets the section of the string at the specified index after splitting it
+	 * into an array with the given regex
+	 * 
+	 * @param str
+	 *            the string to split
+	 * @param regex
+	 *            the regex to split the string with
+	 * @param index
+	 *            the index of the resulting array to retrieve
+	 * @return the substring at the given index
+	 */
+	public static String getSection(String str, String regex, int index) {
+		String[] parts = str.split(regex);
+		if (parts.length > index) {
+			return parts[index];
+		}
+		return null;
 	}
 
 	/**
@@ -262,6 +299,32 @@ public class StringUtil {
 		for (j = str.length(); j > 0 && !String.valueOf(str.charAt(j - 1)).matches(regex); j--);
 
 		return str.substring(i, j);
+	}
+
+	/**
+	 * Trims any leading or trailing zeros from the given string. If the string
+	 * is not a number the method will not throw an exception but trim it as if
+	 * it were one
+	 * 
+	 * @param num
+	 *            the number to trim
+	 * @return the trimmed string
+	 */
+	public static String trimNumber(String num) {
+		String t = trim(num, "[1-9.]");
+		return t.charAt(t.length() - 1) == '.' ? t.substring(0, t.length() - 1) : t;
+	}
+
+	/**
+	 * Forwards to <strong> trimNumber(String)</strong>. This method executes in
+	 * the exact same way but takes a double as a parameter.
+	 * 
+	 * @param num
+	 *            the number to trim
+	 * @return the trimmed string
+	 */
+	public static String trimNumber(double num) {
+		return trimNumber(String.valueOf(num));
 	}
 
 	/**
@@ -586,6 +649,36 @@ public class StringUtil {
 		return str.matches("^[a-zA-Z0-9]*$");
 	}
 
+	public static void main(String[] args) {
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 1000; i++) {
+			System.out.println(hasRepeats("abcdeff"));
+		}
+		System.out.println("Time Taken: " + (System.currentTimeMillis() - start) + "ms");
+	}
+
+	/**
+	 * Tests if the string has characters that repeat
+	 * 
+	 * @param str
+	 *            the string to test
+	 * @return true if the string has repeating characters, false if it does not
+	 */
+	public static boolean hasRepeats(String str) {
+		if (str.length() > Character.MAX_VALUE) {
+			return true;
+		}
+		BigInteger values = new BigInteger("0");
+		for (int i = 0; i < str.length(); i++) {
+			int val = str.charAt(i);
+			if (values.testBit(val)) {
+				return true;
+			}
+			values = values.setBit(val);
+		}
+		return false;
+	}
+
 	/**
 	 * Repeat the given String the specified number of times
 	 * 
@@ -728,18 +821,17 @@ public class StringUtil {
 	 * @param obj
 	 *            the object to serialize
 	 * @return the serialized form of the object
-	 * @throws NotSerializableException
+	 * @throws RuntimeException
 	 *             if the given object cannot be serialized
 	 */
-	public static String serialize(Serializable obj) throws NotSerializableException {
+	public static String serialize(Serializable obj) {
 		ByteArrayOutputStream target = new ByteArrayOutputStream();
 		try (ObjectOutputStream stream = new ObjectOutputStream(target)) {
 			stream.writeObject(obj);
 			return new String(target.toByteArray(), StandardCharsets.ISO_8859_1);
 		} catch (NotSerializableException e) {
-			throw e;
+			throw new IllegalArgumentException(e);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new RuntimeException("Could not serialize the object", e);
 		}
 	}
@@ -751,10 +843,10 @@ public class StringUtil {
 	 * @param str
 	 *            the string to deserialize
 	 * @return the object representation of the String
-	 * @throws InvalidClassException
+	 * @throws RuntimeException
 	 *             if the given string does not represent a valid class
 	 */
-	public static Object deserialize(String str) throws InvalidClassException {
+	public static Object deserialize(String str) {
 		return deserialize(str, Serializable.class);
 	}
 
@@ -774,17 +866,17 @@ public class StringUtil {
 	 * @throws ClassCastException
 	 *             if the object is is not assignable to the type
 	 */
-	public static <T extends Serializable> T deserialize(String str, Class<T> c) throws InvalidClassException {
+	public static <T extends Serializable> T deserialize(String str, Class<T> c) {
 		ByteArrayInputStream target = new ByteArrayInputStream(str.getBytes(StandardCharsets.ISO_8859_1));
 		try (ObjectInputStream stream = new ObjectInputStream(target)) {
 			Object object = stream.readObject();
 			return c.cast(object);
 		} catch (InvalidClassException e) {
-			throw e;
-		} catch (IOException e) {
-			throw new RuntimeException("Could not deserialize the string", e);
+			throw new RuntimeException("Invalid class!", e);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Class not found!", e);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not deserialize the string!", e);
 		}
 	}
 

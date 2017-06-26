@@ -1,19 +1,94 @@
 package com.kmecpp.jlib.utils;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 
 public class IOUtil {
 
 	public static final short DEFAULT_BUFFER_SIZE = 4096;
 
 	protected IOUtil() {
+	}
+
+	/**
+	 * Creates the given file if it does not exist. If the file already exists
+	 * this method will fail silently.
+	 * 
+	 * @param file
+	 *            the file to create
+	 * @throws IOException
+	 *             if an IOException occurs while creating the file
+	 */
+	public static void createFile(File file) throws IOException {
+		if (!file.exists()) {
+			File parent = file.getParentFile();
+			if (parent != null) {
+				parent.mkdirs();
+			}
+			file.createNewFile();
+		}
+	}
+
+	/**
+	 * Copies the specified file or folder to the new directory
+	 * 
+	 * @param source
+	 *            the source file to copy
+	 * @param destination
+	 *            the destination to copy the file to
+	 * @throws IOException
+	 */
+	public static void copyFile(File source, File destination) throws IOException {
+		if (source.isDirectory()) {
+			if (!destination.exists()) {
+				destination.mkdirs();
+			}
+			String files[] = source.list();
+			if (files != null) {
+				for (String file : files) {
+					File srcFile = new File(source, file);
+					File destFile = new File(destination, file);
+					copyFile(srcFile, destFile);
+				}
+			}
+		} else {
+			try (FileChannel in = new FileInputStream(source).getChannel(); FileChannel out = new FileOutputStream(destination).getChannel()) {
+				out.transferFrom(in, 0, in.size());
+			}
+		}
+	}
+
+	/**
+	 * Deletes a file or folder if it exists, regardless of its contents
+	 * 
+	 * @param file
+	 *            the file or directory to delete
+	 */
+	public static void deleteFile(File file) {
+		if (file.exists() && file.isDirectory()) {
+			File[] files = file.listFiles();
+			if (files != null) {
+				for (File f : files) {
+					if (f.isFile()) {
+						f.delete();
+					} else {
+						deleteFile(f);
+					}
+				}
+			}
+			file.delete();
+		}
 	}
 
 	/**
@@ -52,6 +127,20 @@ public class IOUtil {
 	 */
 	public static String readHttpString(URL url) throws IOException {
 		return readString(getHttpConnection(url).getInputStream());
+	}
+
+	/**
+	 * Splits the contents of the file into an array of its lines, which this
+	 * method assumes are separated by '\n' characters.
+	 * 
+	 * @param file
+	 *            the file to read
+	 * @return an array of the file's lines
+	 * @throws IOException
+	 *             if an error occurs while reading from file
+	 */
+	public static String[] readLines(File file) throws IOException {
+		return StringUtil.getLines(readString(file));
 	}
 
 	/**
@@ -178,6 +267,23 @@ public class IOUtil {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/**
+	 * Writes the given text to the file and throws an {@link IOException} if an
+	 * error occurs
+	 * 
+	 * @param file
+	 *            the file to write to
+	 * @param text
+	 *            the text to write
+	 * @throws IOException
+	 *             if an error occurs
+	 */
+	public static void write(File file, String text) throws IOException {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file), DEFAULT_BUFFER_SIZE)) {
+			writer.write(text);
 		}
 	}
 

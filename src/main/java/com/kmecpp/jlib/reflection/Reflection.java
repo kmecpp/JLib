@@ -1,13 +1,39 @@
 package com.kmecpp.jlib.reflection;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import com.kmecpp.jlib.function.Converter;
 import com.kmecpp.jlib.utils.ArrayUtil;
 
 public class Reflection {
+
+	/**
+	 * Tests whether or not the class is assignable from ANY of the given
+	 * options. Essentially this method calls for each class parameter in the
+	 * varargs.
+	 * 
+	 * <pre>
+	 * Class[].isAssignableFrom(cls)
+	 * </pre>
+	 * 
+	 * @param cls
+	 *            the class to test
+	 * @param classes
+	 *            the classes to see if the given one is assignable from
+	 * @return true if the class matches any of the ones given, false otherwise.
+	 */
+	public static boolean isAssignable(Class<?> cls, Class<?>... classes) {
+		for (Class<?> c : classes) {
+			if (c.isAssignableFrom(cls)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Attempts to invokes the constructor without any parameters and returns
@@ -39,6 +65,29 @@ public class Reflection {
 		} catch (Exception e) {
 			throw new ReflectionException(e);
 		}
+	}
+
+	/**
+	 * Gets all the constructors of the given class which match the specified
+	 * number of parameters.
+	 * 
+	 * @param cls
+	 *            the class to search to search for constructors
+	 * @param params
+	 *            the parameter count of the constructors
+	 * @return all the constructors of the given class which have the specified
+	 *         number of parameters
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> ArrayList<Constructor<T>> getConstructors(Class<T> cls, int params) {
+		ArrayList<Constructor<T>> constructors = new ArrayList<>();
+		for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
+			if (constructor.getParameterTypes().length == params) {
+				constructor.setAccessible(true);
+				constructors.add((Constructor<T>) constructor);
+			}
+		}
+		return constructors;
 	}
 
 	//	@SuppressWarnings("unchecked")
@@ -127,12 +176,38 @@ public class Reflection {
 		}
 	}
 
+	/**
+	 * Gets all the fields from the object with the given annotation. The object
+	 * may either be a class or an instance of one. In either case the fields
+	 * will retrieved from that class.
+	 * 
+	 * @param obj
+	 *            the object or class to search
+	 * @param annotation
+	 *            the annotation to filter for
+	 * @return all the fields with the given annotation
+	 */
+	public static Field[] getFieldsWith(Object obj, Class<? extends Annotation> annotation) {
+		ArrayList<Field> fields = new ArrayList<>();
+		for (Field field : getClass(obj).getDeclaredFields()) {
+			field.setAccessible(true);
+			if (field.isAnnotationPresent(annotation)) {
+				fields.add(field);
+			}
+		}
+		return fields.toArray(new Field[0]);
+	}
+
 	public static Field[] getAllFields(Object obj) {
-		Field[] fields = obj instanceof Class ? ((Class<?>) obj).getDeclaredFields() : obj.getClass().getDeclaredFields();
+		Field[] fields = getClass(obj).getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
 		}
 		return fields;
+	}
+
+	public static Class<?> getClass(Object obj) {
+		return obj instanceof Class ? (Class<?>) obj : obj.getClass();
 	}
 
 }

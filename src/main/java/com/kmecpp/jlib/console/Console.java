@@ -8,6 +8,7 @@ import com.kmecpp.jlib.utils.StringUtil;
 
 public class Console {
 
+	private static final Scanner scanner = new Scanner(System.in);
 	private static ArrayList<Command> commands = new ArrayList<>();
 
 	private static boolean running;
@@ -27,7 +28,28 @@ public class Console {
 		});
 	}
 
+	public static String prompt(String prompt) {
+		return prompt(prompt, "", null);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T prompt(String prompt, String errorMessage, InputParser<T> parser) {
+		while (true) {
+			System.out.print(prompt);
+			String input = scanner.nextLine();
+			try {
+				return parser == null ? (T) input : parser.parse(input);
+			} catch (Exception e) {
+				System.out.println(errorMessage);
+			}
+		}
+	}
+
 	public static void capture(ConsoleCapture capture) {
+		capture("> ", capture);
+	}
+
+	public static void capture(String prompt, ConsoleCapture capture) {
 		if (Console.running) {
 			throw new IllegalStateException("Console already capturing!");
 		}
@@ -35,7 +57,7 @@ public class Console {
 
 		Scanner scanner = new Scanner(System.in);
 		inputLoop: while (true) {
-			System.out.print("> ");
+			System.out.print(prompt);
 			String input = scanner.nextLine().trim();
 			if (input.isEmpty()) {
 				continue;
@@ -55,10 +77,10 @@ public class Console {
 					String[] parts = input.split(" ");
 					if (alias.equalsIgnoreCase(parts[0])) {
 						String[] args = Arrays.copyOfRange(parts, 1, parts.length);
-						//						if (args.length < command.getArgs().length) {
-						//							System.out.println("Usage: " + command.getUsage());
-						//							continue inputLoop;
-						//						}
+						if (command.matchArgs() && args.length < command.getArgs().length) {
+							System.out.println("Usage: " + command.getUsage());
+							continue inputLoop;
+						}
 
 						try {
 							command.execute(alias, args);
@@ -76,12 +98,17 @@ public class Console {
 	}
 
 	public static void registerCommand(String alias, final String[] args, final String description, final SimpleCommandExecutor executor) {
+		registerCommand(alias, args, false, description, executor);
+	}
+
+	public static void registerCommand(String alias, final String[] args, final boolean matchArgs, final String description, final SimpleCommandExecutor executor) {
 		registerCommand(new Command(new String[] { alias }) {
 
 			@Override
 			public void configure() {
 				setArgs(args);
 				setDescription(description);
+				setMatchArgs(matchArgs);
 			}
 
 			@Override
@@ -121,6 +148,12 @@ public class Console {
 	public static interface ConsoleCapture {
 
 		void capture(String input);
+
+	}
+
+	public static interface InputParser<T> {
+
+		T parse(String input);
 
 	}
 

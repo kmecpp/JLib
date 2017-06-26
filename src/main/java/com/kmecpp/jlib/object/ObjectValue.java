@@ -4,10 +4,10 @@ public class ObjectValue {
 
 	public static final ObjectValue NULL = new ObjectValue(null);
 
-	protected final Object object;
+	protected final Object value;
 
 	protected ObjectValue(Object object) {
-		this.object = object;
+		this.value = object;
 	}
 
 	public static ObjectValue of(Object object) {
@@ -15,37 +15,36 @@ public class ObjectValue {
 	}
 
 	public boolean is(Class<?> c) {
-		return c.isAssignableFrom(object.getClass());
+		return c.isAssignableFrom(value.getClass());
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T as(Class<T> c) {
-		return c.cast(object);
+		if (c.isPrimitive()) {
+			return (T) value;
+		}
+		return c.cast(value);
 	}
 
 	public Class<?> getValueClass() {
-		return object.getClass();
+		return value.getClass();
 	}
 
 	public boolean isNull() {
-		return object == null;
+		return value == null;
 	}
 
 	public Object get() {
-		return object;
+		return value;
 	}
 
 	//String
 	public boolean isString() {
-		return object instanceof String;
+		return value instanceof String;
 	}
 
 	public String asString() {
-		return (String) object;
-	}
-
-	@Override
-	public String toString() {
-		return String.valueOf(object);
+		return (String) value;
 	}
 
 	public String asString(String def) {
@@ -54,11 +53,11 @@ public class ObjectValue {
 
 	//Boolean
 	public boolean isBoolean() {
-		return object instanceof Boolean;
+		return value instanceof Boolean;
 	}
 
 	public boolean asBoolean() {
-		return (boolean) object;
+		return (boolean) value;
 	}
 
 	public boolean asBoolean(boolean def) {
@@ -67,11 +66,11 @@ public class ObjectValue {
 
 	//Integer
 	public boolean isInt() {
-		return object instanceof Integer;
+		return value instanceof Integer;
 	}
 
 	public int asInt() {
-		return (int) object;
+		return (int) value;
 	}
 
 	public int asInt(int def) {
@@ -80,11 +79,11 @@ public class ObjectValue {
 
 	//Long
 	public boolean isLong() {
-		return object instanceof Long;
+		return value instanceof Long;
 	}
 
 	public long asLong() {
-		return (long) object;
+		return (long) value;
 	}
 
 	public long asLong(long def) {
@@ -93,11 +92,11 @@ public class ObjectValue {
 
 	//Float
 	public boolean isFloat() {
-		return object instanceof Float;
+		return value instanceof Float;
 	}
 
 	public float asFloat() {
-		return (float) object;
+		return (float) value;
 	}
 
 	public float asFloat(float def) {
@@ -106,15 +105,20 @@ public class ObjectValue {
 
 	//Double
 	public boolean isDouble() {
-		return object instanceof Double;
+		return value instanceof Double;
 	}
 
 	public double asDouble() {
-		return (double) object;
+		return (double) value;
 	}
 
 	public double asDouble(double def) {
 		return isNull() ? def : asDouble();
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(value);
 	}
 
 }

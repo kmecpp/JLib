@@ -1,10 +1,18 @@
 package com.kmecpp.jlib.reflection;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import com.kmecpp.jlib.function.Converter;
 import com.kmecpp.jlib.utils.ArrayUtil;
@@ -146,6 +154,17 @@ public class Reflection {
 		}
 	}
 
+	public static Method[] getMethodsWith(Object obj, String methodName, Class<? extends Annotation> annotation) {
+		ArrayList<Method> methods = new ArrayList<>();
+		for (Method method : getClass(obj).getDeclaredMethods()) {
+			method.setAccessible(true);
+			if (method.isAnnotationPresent(annotation)) {
+				methods.add(method);
+			}
+		}
+		return methods.toArray(new Method[0]);
+	}
+
 	public static Object getStaticValue(Object object, Field field) {
 		return getFieldValue(null, field);
 	}
@@ -198,7 +217,28 @@ public class Reflection {
 		return fields.toArray(new Field[0]);
 	}
 
-	public static Field[] getAllFields(Object obj) {
+	/**
+	 * Gets all the fields from the object with types which are assignable to
+	 * the given class. The object may either be a class or an instance of one.
+	 * 
+	 * @param obj
+	 *            the object or class to search
+	 * @param type
+	 *            the type to filter for
+	 * @return all the fields matching the given type
+	 */
+	public static Field[] getFieldsOf(Object obj, Class<?> type) {
+		ArrayList<Field> fields = new ArrayList<>();
+		for (Field field : getClass(obj).getDeclaredFields()) {
+			field.setAccessible(true);
+			if (Reflection.isAssignable(field.getType(), type)) {
+				fields.add(field);
+			}
+		}
+		return fields.toArray(new Field[0]);
+	}
+
+	public static Field[] getFields(Object obj) {
 		Field[] fields = getClass(obj).getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
@@ -208,6 +248,76 @@ public class Reflection {
 
 	public static Class<?> getClass(Object obj) {
 		return obj instanceof Class ? (Class<?>) obj : obj.getClass();
+	}
+
+	/**
+	 * Scans all classes accessible from the context class loader which belong
+	 * to the given package and subpackages.
+	 *
+	 * @param pkg
+	 *            The base package
+	 * @return The classes
+	 */
+	public static Class<?>[] getClasses(String pkg) {
+		try {
+			Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(pkg.replace('.', '/'));
+			List<File> files = new ArrayList<File>();
+			while (resources.hasMoreElements()) {
+				files.add(new File(resources.nextElement().getFile()));
+			}
+			ArrayList<Class<?>> classes = new ArrayList<>();
+			for (File directory : files) {
+				classes.addAll(findClasses(directory, pkg));
+			}
+			return classes.toArray(new Class[classes.size()]);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Recursive method used to find all classes in a given directory and
+	 * subdirs.
+	 *
+	 * @param directory
+	 *            The base directory
+	 * @param pkg
+	 *            The package name for classes found inside the base directory
+	 * @return The classes
+	 */
+	private static List<Class<?>> findClasses(File directory, String pkg) {
+		List<Class<?>> classes = new ArrayList<>();
+		if (!directory.exists()) {
+			return classes;
+		}
+		for (File file : directory.listFiles()) {
+			if (file.isDirectory()) {
+				classes.addAll(findClasses(file, pkg + "." + file.getName()));
+			} else if (file.getName().endsWith(".class")) {
+				try {
+					classes.add(Class.forName(pkg + '.' + file.getName().substring(0, file.getName().length() - 6)));
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		return classes;
+	}
+
+	public static HashSet<Class<?>> getClasses(JarFile jarFile, String pkg) {
+		HashSet<Class<?>> classes = new HashSet<Class<?>>();
+		try {
+			for (Enumeration<JarEntry> entry = jarFile.entries(); entry.hasMoreElements();) {
+				String name = entry.nextElement().getName().replace("/", ".");
+				if (name.startsWith(pkg) && name.endsWith(".class")) {
+					classes.add(Class.forName(name.substring(0, name.length() - 6)));
+				}
+			}
+			jarFile.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return classes;
 	}
 
 }

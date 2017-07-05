@@ -262,6 +262,9 @@ public class IOUtil {
 	 */
 	public static void close(AutoCloseable... close) {
 		for (AutoCloseable closeable : close) {
+			if (closeable == null) {
+				continue;
+			}
 			try {
 				closeable.close();
 			} catch (Exception e) {

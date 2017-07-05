@@ -80,6 +80,20 @@ public class StringUtil {
 	}
 
 	/**
+	 * Counts the number of occurrences of the target substring in the given
+	 * string
+	 * 
+	 * @param str
+	 *            the string to search through
+	 * @param target
+	 *            the target string to search for
+	 * @return the number of occurrences of target in str
+	 */
+	public static int count(String str, String target) {
+		return (str.length() - str.replace(target, "").length()) / target.length();
+	}
+
+	/**
 	 * Ensures the length of all the strings in the array are modified to have
 	 * the given length.
 	 * <p>
@@ -647,14 +661,6 @@ public class StringUtil {
 	 */
 	public static boolean alphanumeric(String str) {
 		return str.matches("^[a-zA-Z0-9]*$");
-	}
-
-	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < 1000; i++) {
-			System.out.println(hasRepeats("abcdeff"));
-		}
-		System.out.println("Time Taken: " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	/**

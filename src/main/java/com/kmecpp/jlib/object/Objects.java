@@ -115,4 +115,13 @@ public class Objects {
 		return first != null ? first : second;
 	}
 
+	public static boolean equals(Object obj, Object... objects) {
+		for (Object o : objects) {
+			if (obj.equals(o)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

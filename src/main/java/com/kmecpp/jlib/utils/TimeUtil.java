@@ -1,6 +1,25 @@
 package com.kmecpp.jlib.utils;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 public class TimeUtil {
+
+	private static TimeZone timeZone;
+
+	public static TimeZone getTimeZone() {
+		return timeZone;
+	}
+
+	public static void setTimeZone(String id) {
+		timeZone = TimeZone.getTimeZone(id);
+	}
+
+	public static Calendar getCalendar() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(timeZone);
+		return calendar;
+	}
 
 	public static long millis(long start) {
 		return System.currentTimeMillis() - start;

@@ -21,6 +21,10 @@ public class IOUtil {
 	protected IOUtil() {
 	}
 
+	public static File createFile(String path) {
+		return createFile(new File(path));
+	}
+
 	/**
 	 * Creates the given file if it does not exist. If the file already exists
 	 * this method will fail silently.
@@ -30,14 +34,19 @@ public class IOUtil {
 	 * @throws IOException
 	 *             if an IOException occurs while creating the file
 	 */
-	public static void createFile(File file) throws IOException {
-		if (!file.exists()) {
-			File parent = file.getParentFile();
-			if (parent != null) {
-				parent.mkdirs();
+	public static File createFile(File file) {
+		try {
+			if (!file.exists()) {
+				File parent = file.getParentFile();
+				if (parent != null) {
+					parent.mkdirs();
+				}
+				file.createNewFile();
 			}
-			file.createNewFile();
+		} catch (IOException e) {
+			throw new RuntimeException();
 		}
+		return file;
 	}
 
 	/**

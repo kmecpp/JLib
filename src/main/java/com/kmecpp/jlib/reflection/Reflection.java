@@ -14,10 +14,19 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.kmecpp.jlib.function.Converter;
-import com.kmecpp.jlib.utils.ArrayUtil;
-
 public class Reflection {
+
+	public static void setField(Object obj, String field, Object value) {
+		setField(obj.getClass(), obj, field, value);
+	}
+
+	public static void setField(Class<?> cls, Object obj, String field, Object value) {
+		try {
+			getField(cls, field).set(obj, value);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/**
 	 * Tests whether or not the class is assignable from ANY of the given
@@ -98,18 +107,12 @@ public class Reflection {
 		return constructors;
 	}
 
-	//	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> cls, Object... params) {
-		Class<?>[] paramTypes = ArrayUtil.getComponentType(params).equals(Class.class)
-				? (Class<?>[]) params
-				: ArrayUtil.convert((Object[]) params, new Converter<Object, Class<?>>() {
-
-					@Override
-					public Class<?> convert(Object obj) {
-						return obj.getClass();
-					}
-
-				});
+		Class<?>[] paramTypes = new Class[params.length];
+		for (int i = 0; i < params.length; i++) {
+			Class<?> c = getClass(params[i]);
+			paramTypes[i] = c;
+		}
 
 		try {
 			Constructor<T> constructor = cls.getDeclaredConstructor(paramTypes);
@@ -133,8 +136,7 @@ public class Reflection {
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeMethod(Object obj, String methodName, Object... params) {
 		try {
-			return (T) getMethod(obj.getClass(), methodName, params)
-					.invoke(obj, (Object[]) params);
+			return (T) getMethod(obj.getClass(), methodName, params).invoke(obj, (Object[]) params);
 		} catch (Exception e) {
 			throw new ReflectionException(e);
 		}
@@ -144,7 +146,7 @@ public class Reflection {
 		try {
 			Class<?>[] paramTypes = new Class[params.length];
 			for (int i = 0; i < params.length; i++) {
-				paramTypes[i] = params[i].getClass();
+				paramTypes[i] = getClass(params[i]);
 			}
 			Method method = cls.getDeclaredMethod(methodName, paramTypes);
 			method.setAccessible(true);
@@ -247,7 +249,10 @@ public class Reflection {
 	}
 
 	public static Class<?> getClass(Object obj) {
-		return obj instanceof Class ? (Class<?>) obj : obj.getClass();
+		Class<?> cls = obj instanceof Class<?> ? (Class<?>) obj : obj.getClass();
+		return cls.isAnonymousClass()
+				? cls.getInterfaces().length == 0 ? cls.getSuperclass() : cls.getInterfaces()[0]
+				: cls;
 	}
 
 	/**
@@ -273,6 +278,17 @@ public class Reflection {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> HashSet<Class<T>> getSubclasses(String pkg, Class<T> cls) {
+		HashSet<Class<T>> classes = new HashSet<>();
+		for (Class<?> c : getClasses(pkg)) {
+			if (isAssignable(c, cls)) {
+				classes.add((Class<T>) c);
+			}
+		}
+		return classes;
 	}
 
 	/**

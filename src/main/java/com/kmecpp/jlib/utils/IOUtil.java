@@ -21,6 +21,12 @@ public class IOUtil {
 	protected IOUtil() {
 	}
 
+	public static File createFile(String path) throws IOException {
+		File file = new File(path);
+		createFile(file);
+		return file;
+	}
+
 	/**
 	 * Creates the given file if it does not exist. If the file already exists
 	 * this method will fail silently.
@@ -30,7 +36,7 @@ public class IOUtil {
 	 * @throws IOException
 	 *             if an IOException occurs while creating the file
 	 */
-	public static void createFile(File file) throws IOException {
+	public static File createFile(File file) throws IOException {
 		if (!file.exists()) {
 			File parent = file.getParentFile();
 			if (parent != null) {
@@ -38,6 +44,7 @@ public class IOUtil {
 			}
 			file.createNewFile();
 		}
+		return file;
 	}
 
 	/**
@@ -116,20 +123,6 @@ public class IOUtil {
 	}
 
 	/**
-	 * Attempts to read data into a String from the given URL and returns that
-	 * String
-	 * 
-	 * @param url
-	 *            the url to read from
-	 * @return the data read from the URL
-	 * @throws IOException
-	 *             if an error occurs while reading from the URL
-	 */
-	public static String readHttpString(URL url) throws IOException {
-		return readString(getHttpConnection(url).getInputStream());
-	}
-
-	/**
 	 * Splits the contents of the file into an array of its lines, which this
 	 * method assumes are separated by '\n' characters.
 	 * 
@@ -194,7 +187,7 @@ public class IOUtil {
 	 * @throws IOException
 	 *             if an IOException occurs
 	 */
-	private static String readString(InputStream inputStream) throws IOException {
+	public static String readString(InputStream inputStream) throws IOException {
 		InputStreamReader reader = new InputStreamReader(inputStream);
 		StringWriter sw = new StringWriter();
 		char[] buffer = new char[4096];
@@ -203,28 +196,6 @@ public class IOUtil {
 			sw.write(buffer, 0, pos);
 		}
 		return sw.toString();
-	}
-
-	/**
-	 * Gets an {@link HttpURLConnection} for the given URL with a read and
-	 * connect timeout of 5 seconds. This method is equivalent to the following:
-	 * 
-	 * <pre>
-	 * getHttpConnection(url, 5000, 5000);
-	 * </pre>
-	 * 
-	 * @param url
-	 *            the URL to connect to
-	 * @return the HTTP URL connection
-	 * @throws IOException
-	 *             if an IOException occurs
-	 */
-	public static HttpURLConnection getHttpConnection(URL url) throws IOException {
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-		connection.setConnectTimeout(5000);
-		connection.setReadTimeout(5000);
-		return connection;
 	}
 
 	/**

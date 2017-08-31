@@ -29,7 +29,7 @@ public class ResourceLocation {
 
 	public URL resolve(String path) {
 		try {
-			if (!StringUtil.last(path).equals("/")) {
+			if (!StringUtil.last(path).equals('/')) {
 				path += "/";
 			}
 			return new URL(url, path);

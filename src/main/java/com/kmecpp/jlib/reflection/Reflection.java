@@ -14,10 +14,31 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.kmecpp.jlib.function.Converter;
-import com.kmecpp.jlib.utils.ArrayUtil;
-
 public class Reflection {
+
+	public static void setField(Object obj, Field field, Object value) {
+		try {
+			field.set(obj, value);
+		} catch (Exception e) {
+			throw new ReflectionException(e);
+		}
+	}
+
+	public static void setField(Object obj, String field, Object value) {
+		try {
+			getField(obj.getClass(), field).set(obj, value);
+		} catch (Exception e) {
+			throw new ReflectionException(e);
+		}
+	}
+
+	public static void setField(Class<?> cls, Object obj, String field, Object value) {
+		try {
+			getField(cls, field).set(obj, value);
+		} catch (Exception e) {
+			throw new ReflectionException(e);
+		}
+	}
 
 	/**
 	 * Tests whether or not the class is assignable from ANY of the given
@@ -98,18 +119,11 @@ public class Reflection {
 		return constructors;
 	}
 
-	//	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> cls, Object... params) {
-		Class<?>[] paramTypes = ArrayUtil.getComponentType(params).equals(Class.class)
-				? (Class<?>[]) params
-				: ArrayUtil.convert((Object[]) params, new Converter<Object, Class<?>>() {
-
-					@Override
-					public Class<?> convert(Object obj) {
-						return obj.getClass();
-					}
-
-				});
+		Class<?>[] paramTypes = new Class[params.length];
+		for (int i = 0; i < params.length; i++) {
+			paramTypes[i] = getClass(params[i]);
+		}
 
 		try {
 			Constructor<T> constructor = cls.getDeclaredConstructor(paramTypes);
@@ -131,22 +145,44 @@ public class Reflection {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T invokeMethod(Object obj, String methodName, Object... params) {
+	public static <T> T invokeMethod(Object obj, Method method, Object... params) {
 		try {
-			return (T) getMethod(obj.getClass(), methodName, params)
-					.invoke(obj, (Object[]) params);
+			method.setAccessible(true);
+			return (T) method.invoke(obj, params);
 		} catch (Exception e) {
 			throw new ReflectionException(e);
 		}
 	}
 
+	public static <T> T invokeMethod(Object obj, String methodName, Object... params) {
+		return invokeMethod(obj, obj.getClass(), methodName, params);
+	}
+
+	public static <T> T invokeMethod(Object obj, Class<?> cls, String methodName, Object... params) {
+		return invokeMethod(obj, getMethod(cls, methodName, params), params);
+	}
+
 	public static Method getMethod(Class<?> cls, String methodName, Object... params) {
 		try {
-			Class<?>[] paramTypes = new Class[params.length];
-			for (int i = 0; i < params.length; i++) {
-				paramTypes[i] = params[i].getClass();
+			ArrayList<Method> methods = new ArrayList<>();
+			for (Method method : cls.getDeclaredMethods()) {
+				if (method.getParameterTypes().length == params.length) {
+					methods.add(method);
+				}
 			}
-			Method method = cls.getDeclaredMethod(methodName, paramTypes);
+
+			Method method;
+			if (methods.size() == 1) {
+				method = methods.get(0);
+			} else if (methods.size() > 1) {
+				Class<?>[] paramTypes = new Class[params.length];
+				for (int i = 0; i < params.length; i++) {
+					paramTypes[i] = getClass(params[i]);
+				}
+				method = cls.getDeclaredMethod(methodName, paramTypes);
+			} else {
+				throw new NoSuchMethodException();
+			}
 			method.setAccessible(true);
 			return method;
 		} catch (Exception e) {
@@ -154,7 +190,7 @@ public class Reflection {
 		}
 	}
 
-	public static Method[] getMethodsWith(Object obj, String methodName, Class<? extends Annotation> annotation) {
+	public static Method[] getMethodsWith(Object obj, Class<? extends Annotation> annotation) {
 		ArrayList<Method> methods = new ArrayList<>();
 		for (Method method : getClass(obj).getDeclaredMethods()) {
 			method.setAccessible(true);
@@ -173,6 +209,10 @@ public class Reflection {
 		return getFieldValue(object, getField(object.getClass(), fieldName));
 	}
 
+	public static Object getFieldValue(Object object, Class<?> cls, String fieldName) {
+		return getFieldValue(object, getField(cls, fieldName));
+	}
+
 	public static Object getFieldValue(Object object, Field field) {
 		return getFieldValue(object, field, Object.class);
 	}
@@ -185,14 +225,37 @@ public class Reflection {
 		}
 	}
 
-	public static Field getField(Class<?> cls, String fieldName) {
+	public static Field getFieldOrNull(Object obj, String fieldName) {
 		try {
-			Field field = cls.getDeclaredField(fieldName);
+			return getField(obj, fieldName);
+		} catch (ReflectionException e) {
+			return null;
+		}
+	}
+
+	public static Field getField(Object obj, String fieldName) {
+		try {
+			Field field = getClass(obj).getDeclaredField(fieldName);
 			field.setAccessible(true);
 			return field;
 		} catch (Exception e) {
 			throw new ReflectionException(e);
 		}
+	}
+
+	public static Field findField(Object obj, String fieldName) {
+		Class<?> cls = getClass(obj);
+		System.out.println("SEARCHING CLASS: " + cls.getName());
+
+		for (Field field : getClass(obj).getDeclaredFields()) {
+			System.out.println("Found: " + field.getType() + " " + field.getName());
+			if (field.getName().equals(fieldName)) {
+				field.setAccessible(true);
+				System.out.println("FOUND!");
+				return field;
+			}
+		}
+		return cls.getSuperclass() == null ? null : findField(cls.getSuperclass(), fieldName);
 	}
 
 	/**
@@ -247,7 +310,10 @@ public class Reflection {
 	}
 
 	public static Class<?> getClass(Object obj) {
-		return obj instanceof Class ? (Class<?>) obj : obj.getClass();
+		Class<?> cls = obj instanceof Class<?> ? (Class<?>) obj : obj.getClass();
+		return cls.isAnonymousClass()
+				? cls.getInterfaces().length == 0 ? cls.getSuperclass() : cls.getInterfaces()[0]
+				: cls;
 	}
 
 	/**
@@ -271,8 +337,19 @@ public class Reflection {
 			}
 			return classes.toArray(new Class[classes.size()]);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ReflectionException(e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> HashSet<Class<T>> getSubclasses(String pkg, Class<T> cls) {
+		HashSet<Class<T>> classes = new HashSet<>();
+		for (Class<?> c : getClasses(pkg)) {
+			if (isAssignable(c, cls)) {
+				classes.add((Class<T>) c);
+			}
+		}
+		return classes;
 	}
 
 	/**
@@ -297,7 +374,7 @@ public class Reflection {
 				try {
 					classes.add(Class.forName(pkg + '.' + file.getName().substring(0, file.getName().length() - 6)));
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					e.printStackTrace();
 				}
 			}
 		}

@@ -25,18 +25,14 @@ public class Reflection {
 	}
 
 	public static void setField(Object obj, String field, Object value) {
-		try {
-			getField(obj.getClass(), field).set(obj, value);
-		} catch (Exception e) {
-			throw new ReflectionException(e);
-		}
+		setField(obj.getClass(), obj, field, value);
 	}
 
 	public static void setField(Class<?> cls, Object obj, String field, Object value) {
 		try {
 			getField(cls, field).set(obj, value);
 		} catch (Exception e) {
-			throw new ReflectionException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -137,8 +133,7 @@ public class Reflection {
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeStaticMethod(Class<?> cls, String methodName, Object... params) {
 		try {
-			return (T) getMethod(cls, methodName, params)
-					.invoke(null, (Object[]) params);
+			return (T) getMethod(cls, methodName, params).invoke(null, (Object[]) params);
 		} catch (Exception e) {
 			throw new ReflectionException(e);
 		}

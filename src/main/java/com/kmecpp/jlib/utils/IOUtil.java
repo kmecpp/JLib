@@ -21,10 +21,8 @@ public class IOUtil {
 	protected IOUtil() {
 	}
 
-	public static File createFile(String path) throws IOException {
-		File file = new File(path);
-		createFile(file);
-		return file;
+	public static File createFile(String path) {
+		return createFile(new File(path));
 	}
 
 	/**
@@ -36,13 +34,17 @@ public class IOUtil {
 	 * @throws IOException
 	 *             if an IOException occurs while creating the file
 	 */
-	public static File createFile(File file) throws IOException {
-		if (!file.exists()) {
-			File parent = file.getParentFile();
-			if (parent != null) {
-				parent.mkdirs();
+	public static File createFile(File file) {
+		try {
+			if (!file.exists()) {
+				File parent = file.getParentFile();
+				if (parent != null) {
+					parent.mkdirs();
+				}
+				file.createNewFile();
 			}
-			file.createNewFile();
+		} catch (IOException e) {
+			throw new RuntimeException();
 		}
 		return file;
 	}

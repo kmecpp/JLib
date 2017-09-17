@@ -17,6 +17,17 @@ public class Console {
 		return running;
 	}
 
+	public static void startBackground() {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				start();
+			}
+
+		}).start();
+	}
+
 	public static void start() {
 		capture(new ConsoleCapture() {
 
@@ -95,6 +106,10 @@ public class Console {
 
 			capture.capture(input);
 		}
+	}
+
+	public static void registerCommand(String alias, final String description, final SimpleCommandExecutor executor) {
+		registerCommand(alias, new String[0], false, description, executor);
 	}
 
 	public static void registerCommand(String alias, final String[] args, final String description, final SimpleCommandExecutor executor) {

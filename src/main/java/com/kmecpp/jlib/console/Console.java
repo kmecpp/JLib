@@ -18,14 +18,17 @@ public class Console {
 	}
 
 	public static void startBackground() {
-		new Thread(new Runnable() {
+		Thread thread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				start();
 			}
 
-		}).start();
+		});
+		thread.setDaemon(true);
+		thread.setName("Console Reader Thread");
+		thread.start();
 	}
 
 	public static void start() {

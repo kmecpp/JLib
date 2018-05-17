@@ -11,21 +11,18 @@ public class Console {
 	private static final Scanner scanner = new Scanner(System.in);
 	private static ArrayList<Command> commands = new ArrayList<>();
 
-	private static boolean running;
+	private static boolean background = true;
 
-	public static boolean isRunning() {
-		return running;
+	public static boolean isBackground() {
+		return background;
+	}
+
+	public static void setBackground(boolean background) {
+		Console.background = background;
 	}
 
 	public static void start() {
-		capture(new ConsoleCapture() {
-
-			@Override
-			public void capture(String input) {
-				System.out.println("Unknown command! Type 'help' for a list of commands!");
-			}
-
-		});
+		capture((input) -> System.out.println("Unknown command! Type 'help' for a list of commands!"));
 	}
 
 	public static String prompt(String prompt) {
@@ -50,11 +47,18 @@ public class Console {
 	}
 
 	public static void capture(String prompt, ConsoleCapture capture) {
-		if (Console.running) {
-			throw new IllegalStateException("Console already capturing!");
-		}
-		Console.running = true;
+		Runnable runnable = () -> capture_impl(prompt, capture);
 
+		if (background) {
+			Thread thread = new Thread(runnable);
+			thread.setName("Console Reader Thread");
+			thread.start();
+		} else {
+			runnable.run();
+		}
+	}
+
+	private static void capture_impl(String prompt, ConsoleCapture capture) {
 		Scanner scanner = new Scanner(System.in);
 		inputLoop: while (true) {
 			System.out.print(prompt);
@@ -64,6 +68,7 @@ public class Console {
 			}
 
 			if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("stop")) {
+				System.out.println("Shutting down application");
 				scanner.close();
 				System.exit(0);
 			} else if (input.equals("help") || input.equalsIgnoreCase("?")) {
@@ -95,6 +100,10 @@ public class Console {
 
 			capture.capture(input);
 		}
+	}
+
+	public static void registerCommand(String alias, final String description, final SimpleCommandExecutor executor) {
+		registerCommand(alias, new String[0], false, description, executor);
 	}
 
 	public static void registerCommand(String alias, final String[] args, final String description, final SimpleCommandExecutor executor) {

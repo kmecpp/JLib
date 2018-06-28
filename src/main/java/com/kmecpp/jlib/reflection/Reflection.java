@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -15,6 +16,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class Reflection {
+
+	public static boolean isConcrete(Class<?> cls) {
+		return !cls.isInterface() && !Modifier.isAbstract(cls.getModifiers());
+	}
 
 	public static void setField(Object obj, Field field, Object value) {
 		try {

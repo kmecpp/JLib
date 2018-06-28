@@ -21,6 +21,11 @@ public class Reflection {
 		return !cls.isInterface() && !Modifier.isAbstract(cls.getModifiers());
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T cast(Object obj) {
+		return (T) obj;
+	}
+
 	public static void setField(Object obj, Field field, Object value) {
 		try {
 			field.set(obj, value);
@@ -387,7 +392,11 @@ public class Reflection {
 			for (Enumeration<JarEntry> entry = jarFile.entries(); entry.hasMoreElements();) {
 				String name = entry.nextElement().getName().replace("/", ".");
 				if (name.startsWith(pkg) && name.endsWith(".class")) {
-					classes.add(Class.forName(name.substring(0, name.length() - 6)));
+					try {
+						classes.add(Class.forName(name.substring(0, name.length() - 6)));
+					} catch (NoClassDefFoundError e) {
+						//Ignore unloaded classes
+					}
 				}
 			}
 			jarFile.close();

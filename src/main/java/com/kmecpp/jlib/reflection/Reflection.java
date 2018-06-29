@@ -17,6 +17,10 @@ import java.util.jar.JarFile;
 
 public class Reflection {
 
+	public static boolean isImplementation(Class<?> abstractClass, Class<?> implementingClass) {
+		return isConcrete(implementingClass) && abstractClass.isAssignableFrom(implementingClass);
+	}
+
 	public static boolean isConcrete(Class<?> cls) {
 		return !cls.isInterface() && !Modifier.isAbstract(cls.getModifiers());
 	}

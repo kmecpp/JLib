@@ -14,7 +14,7 @@
 	<repositories>
 		<repository>
 			<id>kmecpp</id>
-			<url>http://repo.kmecpp.com/maven</url>
+			<url>http://repo.kmecpp.com</url>
 		</repository>
 	</repositories>
 

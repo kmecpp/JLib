@@ -164,36 +164,64 @@ public class Reflection {
 	}
 
 	public static <T> T invokeMethod(Object obj, String methodName, Object... params) {
-		return invokeMethod(obj, obj.getClass(), methodName, params);
+		return invokeMethod(obj.getClass(), obj, methodName, params);
 	}
 
-	public static <T> T invokeMethod(Object obj, Class<?> cls, String methodName, Object... params) {
+	public static <T> T invokeMethod(Class<?> cls, Object obj, String methodName, Object... params) {
 		return invokeMethod(obj, getMethod(cls, methodName, params), params);
 	}
 
+	/**
+	 * NOTE: This method does NOT handle ambiguous calls how Java does, but does
+	 * have fairly decent method signature resolution.
+	 * https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.12.2
+	 * 
+	 * @param cls
+	 *            the class containing the method
+	 * @param methodName
+	 *            the method name
+	 * @param params
+	 *            the method parameters
+	 * @return the result of the method
+	 */
 	public static Method getMethod(Class<?> cls, String methodName, Object... params) {
 		try {
-			ArrayList<Method> methods = new ArrayList<>();
-			for (Method method : cls.getDeclaredMethods()) {
-				if (method.getParameterTypes().length == params.length) {
-					methods.add(method);
+			ArrayList<Method> potentialMethods = new ArrayList<>();
+			methodLoop: for (Method method : cls.getDeclaredMethods()) {
+				if (method.getParameterTypes().length != params.length || !method.getName().equals(methodName)) {
+					continue;
+				}
+				method.setAccessible(true);
+
+				boolean exact = true;
+				for (int i = 0; i < method.getParameterCount(); i++) {
+					if (method.getParameterTypes()[i] != params[i].getClass()) {
+						if (method.getParameterTypes()[i].isAssignableFrom(params[i].getClass())) {
+							exact = false;
+						} else {
+							continue methodLoop;
+						}
+					}
+				}
+
+				if (exact) {
+					return method;
+				} else {
+					potentialMethods.add(method);
 				}
 			}
-
-			Method method;
-			if (methods.size() == 1) {
-				method = methods.get(0);
-			} else if (methods.size() > 1) {
+			if (potentialMethods.size() == 1) {
+				return potentialMethods.get(0);
+			} else if (potentialMethods.size() > 1) {
 				Class<?>[] paramTypes = new Class[params.length];
 				for (int i = 0; i < params.length; i++) {
 					paramTypes[i] = getClass(params[i]);
 				}
-				method = cls.getDeclaredMethod(methodName, paramTypes);
+				Method method = cls.getDeclaredMethod(methodName, paramTypes);
+				return method;
 			} else {
 				throw new NoSuchMethodException();
 			}
-			method.setAccessible(true);
-			return method;
 		} catch (Exception e) {
 			throw new ReflectionException(e);
 		}
@@ -391,13 +419,22 @@ public class Reflection {
 	}
 
 	public static HashSet<Class<?>> getClasses(JarFile jarFile, String pkg) {
+		return getClasses(null, jarFile, pkg);
+	}
+
+	public static HashSet<Class<?>> getClasses(ClassLoader classLoader, JarFile jarFile, String pkg) {
 		HashSet<Class<?>> classes = new HashSet<Class<?>>();
 		try {
 			for (Enumeration<JarEntry> entry = jarFile.entries(); entry.hasMoreElements();) {
 				String name = entry.nextElement().getName().replace("/", ".");
 				if (name.startsWith(pkg) && name.endsWith(".class")) {
 					try {
-						classes.add(Class.forName(name.substring(0, name.length() - 6)));
+						String className = name.substring(0, name.length() - 6);
+						if (classLoader == null) {
+							classes.add(Class.forName(className));
+						} else {
+							classes.add(classLoader.loadClass(className));
+						}
 					} catch (NoClassDefFoundError e) {
 						//Ignore unloaded classes
 					}

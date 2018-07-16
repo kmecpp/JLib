@@ -27,6 +27,18 @@ public class TimeUtil {
 		return calendar;
 	}
 
+	public static int getDay() {
+		return getCalendar().get(Calendar.DAY_OF_MONTH);
+	}
+
+	public static int getMonth() {
+		return getCalendar().get(Calendar.MONTH) + 1;
+	}
+
+	public static int getYear() {
+		return getCalendar().get(Calendar.YEAR);
+	}
+
 	public static long millis(long start) {
 		return System.currentTimeMillis() - start;
 	}

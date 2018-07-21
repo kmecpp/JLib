@@ -32,6 +32,7 @@ public class Reflection {
 
 	public static void setField(Object obj, Field field, Object value) {
 		try {
+			field.setAccessible(true);
 			field.set(obj, value);
 		} catch (Exception e) {
 			throw new ReflectionException(e);
@@ -195,7 +196,7 @@ public class Reflection {
 
 				boolean exact = true;
 				for (int i = 0; i < method.getParameterCount(); i++) {
-					if (method.getParameterTypes()[i] != params[i].getClass()) {
+					if (!method.getParameterTypes()[i].equals(getClass(params[i]))) {
 						if (method.getParameterTypes()[i].isAssignableFrom(params[i].getClass())) {
 							exact = false;
 						} else {
@@ -210,6 +211,7 @@ public class Reflection {
 					potentialMethods.add(method);
 				}
 			}
+			
 			if (potentialMethods.size() == 1) {
 				return potentialMethods.get(0);
 			} else if (potentialMethods.size() > 1) {
@@ -223,7 +225,7 @@ public class Reflection {
 				throw new NoSuchMethodException();
 			}
 		} catch (Exception e) {
-			throw new ReflectionException(e);
+			throw new ReflectionException("Could not find method " + methodName + " in class: " + cls.getName(), e);
 		}
 	}
 

@@ -186,6 +186,9 @@ public class Reflection {
 	 * @return the result of the method
 	 */
 	public static Method getMethod(Class<?> cls, String methodName, Object... params) {
+		if (params == null) {
+			params = new Object[] {};
+		}
 		try {
 			ArrayList<Method> potentialMethods = new ArrayList<>();
 			methodLoop: for (Method method : cls.getDeclaredMethods()) {
@@ -211,7 +214,7 @@ public class Reflection {
 					potentialMethods.add(method);
 				}
 			}
-			
+
 			if (potentialMethods.size() == 1) {
 				return potentialMethods.get(0);
 			} else if (potentialMethods.size() > 1) {
@@ -264,13 +267,13 @@ public class Reflection {
 		}
 	}
 
-	public static Field getFieldOrNull(Object obj, String fieldName) {
-		try {
-			return getField(obj, fieldName);
-		} catch (ReflectionException e) {
-			return null;
-		}
-	}
+	//	public static Field getFieldOrNull(Object obj, String fieldName) {
+	//		try {
+	//			return getField(obj, fieldName);
+	//		} catch (ReflectionException e) {
+	//			return null;
+	//		}
+	//	}
 
 	public static Field getField(Object obj, String fieldName) {
 		try {

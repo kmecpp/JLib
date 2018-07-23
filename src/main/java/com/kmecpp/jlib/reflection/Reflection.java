@@ -89,21 +89,18 @@ public class Reflection {
 
 	public static <T> T newInstance(Constructor<T> constructor, Object... values) {
 		try {
+			constructor.setAccessible(true);
 			return constructor.newInstance((Object[]) values);
 		} catch (Exception e) {
-			throw new ReflectionException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
 	public static <T> T newInstance(Class<T> cls, Object... params) {
 		try {
-			if (params.length == 0) {
-				return cls.newInstance();
-			} else {
-				return getConstructor(cls, params).newInstance(params);
-			}
+			return getConstructor(cls, params).newInstance(params);
 		} catch (Exception e) {
-			throw new ReflectionException(e);
+			throw new RuntimeException(e);
 		}
 	}
 

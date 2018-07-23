@@ -11,18 +11,18 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>kmecpp</id>
-			<url>http://repo.kmecpp.com</url>
-		</repository>
-	</repositories>
+	<!-- <repositories> -->
+	<!-- <repository> -->
+	<!-- <id>kmecpp</id> -->
+	<!-- <url>http://repo.kmecpp.com</url> -->
+	<!-- </repository> -->
+	<!-- </repositories> -->
 
 	<dependencies>
 		<dependency>
 			<groupId>com.kmecpp</groupId>
 			<artifactId>jflame</artifactId>
-			<version>LATEST</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

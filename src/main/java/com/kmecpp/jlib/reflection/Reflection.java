@@ -264,13 +264,15 @@ public class Reflection {
 		}
 	}
 
-	//	public static Field getFieldOrNull(Object obj, String fieldName) {
-	//		try {
-	//			return getField(obj, fieldName);
-	//		} catch (ReflectionException e) {
-	//			return null;
-	//		}
-	//	}
+	public static Field getFieldOrNull(Object obj, String fieldName) {
+		try {
+			Field field = getClass(obj).getDeclaredField(fieldName);
+			field.setAccessible(true);
+			return field;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	public static Field getField(Object obj, String fieldName) {
 		try {
